@@ -1,0 +1,19 @@
+!function($){$('.pl-sn-navpro').on('template_ready',function(){$.autocomplete.init($(this))})
+$.autocomplete={init:function(section){var that=this
+var search=section.find('.search-field')||!1
+if(!search){return!1}
+$(search).attr('autocomplete','off')
+var options={callback:function(value){that.run_search(section)},wait:750,highlight:!0,allowSubmit:!1,captureLength:2}
+$(search).typeWatch(options)},run_search:function(section){var that=this
+var typed=section.find('.search-field').val()
+var results=$('#searchResults')
+if(!typed||typed.length<3){results.fadeOut()
+return!1}
+var options={parent:'.searchform-progress',showSpinner:!1}
+NProgress.configure(options)
+NProgress.start();NProgress.inc();$.ajax({url:PLData.urls.ajaxURL,dataType:"json",data:{action:'incremental_suggest',term:typed,nonce:PLData.config.nonce},success:function(data){that.drawoutput(data)
+NProgress.done()},error:function(jqXHR,textStatus,errorThrown){console.log(jqXHR,textStatus,errorThrown)}})},drawoutput:function(data){var out=$('<ul></ul>')
+var results=$('#searchResults')
+$.each(data,function(i,o){var content=sprintf('<li class="search-result"><h3 class="search-result-title"><a href="%s">%s</a></h3><ul class="search-result-byline"><li>%s</li><li>%s</li></ul></li>',o.link,o.label,o.author,o.date);$(out).append(content)})
+if(data.length===0){out=$('<span class="no-result">Nothing Found</span>')}
+results.html(out).show()}}}(window.jQuery)
