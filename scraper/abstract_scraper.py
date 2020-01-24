@@ -14,7 +14,7 @@ class Scraper:
 
     @staticmethod
     def get_content(url):
-        res = requests.get(url)
+        res = requests.get(url) # validate
         soup = BeautifulSoup(res.text, 'html.parser')
         return soup.body
 
@@ -32,3 +32,5 @@ class Scraper:
     def save_data_json(data, file):
         with open(file, 'w') as f:
             json.dump(data, sort_keys=True, indent=4, separators=(',', ': '), fp=f, ensure_ascii=False)
+
+
