@@ -1,22 +1,29 @@
 import codecs
-import configparser
 import json
-import urllib
-
+import sys
 import requests
+
+from scraper.bootstrap import today_time, config, logging
+# from HTMLParser import HTMLParseError
 from bs4 import BeautifulSoup
 
 
 class Scraper:
     def __init__(self):
-        self.config = configparser.ConfigParser()
-        self.config.read('../config.ini')
+        self.config = config
+        self.logging = logging
 
-    @staticmethod
-    def get_content(url):
-        res = requests.get(url) # validate
-        soup = BeautifulSoup(res.text, 'html.parser')
-        return soup.body
+    def get_content(self, url):
+        try:
+            res = requests.get(url)
+            soup = BeautifulSoup(res.text, 'html.parser')
+        except requests.exceptions.RequestException as e:
+            self.logging.error(f'Problem with request.get called on url {url}\n{e}')
+            sys.exit(1)
+        # except HTMLParseError as e:
+        #     self.logging.error(f'Problem with beautiful soap parsing html at url {url}\n{e}')
+        else:
+            return soup.body
 
     @staticmethod
     def get_file_content(path):
@@ -29,8 +36,6 @@ class Scraper:
         return url + f'page/{page}'
 
     @staticmethod
-    def save_data_json(data, file):
+    def save_data_json(data, file=f'data/{today_time}.json'):
         with open(file, 'w') as f:
             json.dump(data, sort_keys=True, indent=4, separators=(',', ': '), fp=f, ensure_ascii=False)
-
-

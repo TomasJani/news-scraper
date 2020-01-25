@@ -1,4 +1,4 @@
-from scraper.scraper_utils import config
+from scraper.bootstrap import config
 
 
 class AtomicDict(dict):
@@ -13,6 +13,9 @@ class AtomicDict(dict):
         return res
 
     def add_all(self, objs):
+        if objs is None:
+            # Log
+            return True
         max_collisions = int(config.get('Settings', 'MaxCollisions'))
         for title, values in objs.items():
             res = self.add({
@@ -24,3 +27,15 @@ class AtomicDict(dict):
             if max_collisions == 0:
                 return False
         return True
+
+    def add_additional_data(self, additional_data):
+        if additional_data is None:
+            # Log
+            return
+        title = additional_data['title']
+        new_values = additional_data['values']
+        if self[title] is None:
+            # Log
+            return
+        for key in new_values.keys():
+            self[title][key] = new_values[key]

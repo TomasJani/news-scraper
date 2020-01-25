@@ -1,3 +1,6 @@
+config.ini
 .idea/
-
 websites/
+scraper/data/
+scraper/logs/
+scraper/__pycache__/

@@ -15,11 +15,14 @@ class ZemAVek(Scraper):
         new_data = AtomicDict()
         current_content = self.get_content(self.url_of_page(self.url, page))
         # current_content = self.get_file_content(self.url)
+        if current_content is None:
+            self.logging.error(f"get_new_articles_by_page got None content with url {self.url_of_page(self.url, page)}")
+            return AtomicDict()
         for article in current_content.find_all('article'):
             scraped_article = self.scrape_article(article)
             new_data.add(scraped_article)
 
-        return new_data.copy()
+        return new_data
 
     def get_new_articles(self):
         page = 1
@@ -30,18 +33,18 @@ class ZemAVek(Scraper):
             still_new = self.data.add_all(new_data)
             page += 1
 
+        self.get_from_article()
+
     @scraper_utils.slow_down
     def get_from_article(self):
-        for article in self.data:
-            article_content = self.get_content(article.url)
-            self.data[article.title] = {
-                'tags': article_content.find('tags').text,
-                'author': article_content.find('sab-author').text,
-                'content': ''  # every p till h3
-            }
-
-    def still_new_articles(self, new_data):
-        return len(new_data.keys() & self.yesterdays_data.keys()) <= 1
+        for title, article_info in self.data.items():
+            article_content = self.get_content(article_info['url'])
+            if article_content is None:
+                self.logging.error(f"get_from_article got None content with url {self.get_content(article_info['url'])}")
+                continue
+            additional_data = self.scrape_content(title, article_content)
+            self.data.add_additional_data(additional_data)
+            self.logging.info(f'(({title})) was successfully added to file DB')
 
     @staticmethod
     @scraper_utils.validate_dict
@@ -49,11 +52,11 @@ class ZemAVek(Scraper):
         return {
             'title': article.h3.a.text,
             'values': {
-                'url': article.a['href'],
+                'url': article.find('a')['href'],
                 'time_published': article.find('time')['datetime'],
-                'description': article.p.text,
-                'photo': article.img['src'],
-                'tags': [],
+                'description': article.find('p').get_text(),
+                'photo': article.find('img')['src'],  # Parse URL
+                'tags': '',
                 'author': '',
                 'content': ''
             }
@@ -61,13 +64,13 @@ class ZemAVek(Scraper):
 
     @staticmethod
     @scraper_utils.validate_dict
-    def scrape_content(article_content):
+    def scrape_content(title, article_content):
         return {
-            'title': article_content.title,
+            'title': title,
             'values': {
-                'tags': article_content.find('tags').text,
-                'author': article_content.find('sab-author').text,
-                'content': ''  # every p till h3
+                'tags': article_content.find(class_='tags').get_text(),  # Parse Tags
+                'author': article_content.find(class_='author').find('a').get_text(),
+                'content': article_content.find(class_='entry-content').get_text()
             }
         }
 
@@ -75,6 +78,4 @@ class ZemAVek(Scraper):
 zav = ZemAVek()
 zav.get_new_articles()
 print(len(zav.data))
-for key, values in zav.data.items():
-    print(key)
-zav.save_data_json(zav.data, 'out.json')
+zav.save_data_json(zav.data)

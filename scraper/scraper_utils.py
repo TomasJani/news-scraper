@@ -1,9 +1,6 @@
-import configparser
 import time
+from scraper.bootstrap import config
 from random import randint
-
-config = configparser.ConfigParser()
-config.read('../config.ini')
 
 
 def slow_down(fn):
@@ -21,8 +18,8 @@ def validate_dict(fn):
     def wrapper(*args, **kwargs):
         try:
             res = fn(*args, **kwargs)
-        except:  # Correct exceptions
-            print('error in scrape')
+        except Exception as e:  # Correct exceptions
+            print(e)
             return None
         else:
             return res
