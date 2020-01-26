@@ -7,7 +7,7 @@ class ZemAVek(Scraper):
     def __init__(self):
         super().__init__()
         self.data = AtomicDict()
-        self.yesterdays_data = {}
+        self.yesterdays_data = self.load_json(f'data/{self.yesterday_time}.json')
         self.url = self.config.get('URL', 'ZemAVek')
 
     @scraper_utils.slow_down
@@ -32,7 +32,7 @@ class ZemAVek(Scraper):
             new_data = self.get_new_articles_by_page(page)
             if len(new_data) == 0:
                 self.logging.error(f'get_new_articles is not getting new data from {self.url} at {page} page')
-            still_new = self.data.add_all(new_data)
+            still_new = self.data.add_all(new_data, self.yesterdays_data)
             page += 1
 
         self.get_from_article()
@@ -42,11 +42,12 @@ class ZemAVek(Scraper):
         for title, article_info in self.data.items():
             article_content = self.get_content(article_info['url'])
             if article_content is None:
-                self.logging.error(f"get_from_article got None content with url {self.get_content(article_info['url'])}")
+                self.logging.error(
+                    f"get_from_article got None content with url {self.get_content(article_info['url'])}")
                 continue
             additional_data = self.scrape_content(title, article_content)
             self.data.add_additional_data(additional_data)
-            self.logging.info(f'(({title})) was successfully added to file DB')
+            self.logging.info(f'(({title})) added to file DB')
 
     @staticmethod
     @scraper_utils.validate_dict

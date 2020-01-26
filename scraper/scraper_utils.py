@@ -19,7 +19,7 @@ def validate_dict(fn):
         try:
             res = fn(*args, **kwargs)
         except Exception as e:  # Correct exceptions
-            logging.error(f'validation problem with {args}\n{e}')
+            logging.error(f'validation problem\n{e}')
             return None
         else:
             return res
