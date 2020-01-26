@@ -1,5 +1,5 @@
 import time
-from scraper.bootstrap import config
+from scraper.bootstrap import config, logging
 from random import randint
 
 
@@ -8,7 +8,7 @@ def slow_down(fn):
         sleep_time = randint(1, int(config.get('Settings', 'WaitTime')))
         time.sleep(sleep_time)
         res = fn(*args, **kwargs)
-        time.sleep(sleep_time)
+        # time.sleep(sleep_time)
         return res
 
     return wrapper
@@ -19,7 +19,7 @@ def validate_dict(fn):
         try:
             res = fn(*args, **kwargs)
         except Exception as e:  # Correct exceptions
-            print(e)
+            logging.error(f'validation problem with {args}\n{e}')
             return None
         else:
             return res

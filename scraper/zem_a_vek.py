@@ -30,6 +30,8 @@ class ZemAVek(Scraper):
         max_page = int(self.config.get('Settings', 'MaxPages'))
         while still_new and page <= max_page:
             new_data = self.get_new_articles_by_page(page)
+            if len(new_data) == 0:
+                self.logging.error(f'get_new_articles is not getting new data from {self.url} at {page} page')
             still_new = self.data.add_all(new_data)
             page += 1
 
