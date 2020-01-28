@@ -6,7 +6,6 @@ from scraper.atomic_dict import AtomicDict
 class ZemAVek(Scraper):
     def __init__(self):
         super().__init__()
-        self.data = AtomicDict()
         self.yesterdays_data = self.load_json(f'data/zem_a_vek/{self.yesterday_time}.json') or AtomicDict()
         self.url = self.config.get('URL', 'ZemAVek')
 
@@ -14,7 +13,6 @@ class ZemAVek(Scraper):
     def get_new_articles_by_page(self, page):
         new_data = AtomicDict()
         current_content = self.get_content(self.url_of_page(self.url, page, 'ZemAVek'))
-        # current_content = self.get_file_content(self.url)
         if current_content is None:
             self.logging.error(f"get_new_articles_by_page got None content with url {self.url_of_page(self.url, page, 'ZemAVek')}")
             return AtomicDict()
@@ -23,31 +21,6 @@ class ZemAVek(Scraper):
             new_data.add(scraped_article)
 
         return new_data
-
-    def get_new_articles(self):
-        page = 1
-        still_new = True
-        max_page = int(self.config.get('Settings', 'MaxPages'))
-        while still_new and page <= max_page:
-            new_data = self.get_new_articles_by_page(page)
-            if len(new_data) == 0:
-                self.logging.error(f'get_new_articles is not getting new data from {self.url} at {page} page')
-            still_new = self.data.add_all(new_data, self.yesterdays_data)
-            page += 1
-
-        self.get_from_article()
-
-    @scraper_utils.slow_down
-    def get_from_article(self):
-        for title, article_info in self.data.items():
-            article_content = self.get_content(article_info['url'])
-            if article_content is None:
-                self.logging.error(
-                    f"get_from_article got None content with url {self.get_content(article_info['url'])}")
-                continue
-            additional_data = self.scrape_content(title, article_content)
-            self.data.add_additional_data(additional_data)
-            self.logging.info(f'(({title})) added to file DB')
 
     @staticmethod
     @scraper_utils.validate_dict
