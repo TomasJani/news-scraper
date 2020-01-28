@@ -3,22 +3,23 @@ from scraper.abstract_scraper import Scraper
 from scraper.atomic_dict import AtomicDict
 
 
-class ZemAVek(Scraper):
+class Plus7Dni(Scraper):
     def __init__(self):
         super().__init__()
         self.data = AtomicDict()
-        self.yesterdays_data = self.load_json(f'data/zem_a_vek/{self.yesterday_time}.json') or AtomicDict()
-        self.url = self.config.get('URL', 'ZemAVek')
+        self.yesterdays_data = self.load_json(f'data/plus_7_dni/{self.yesterday_time}.json')
+        self.url = self.config.get('URL', 'Plus7Dni')
 
     @scraper_utils.slow_down
     def get_new_articles_by_page(self, page):
         new_data = AtomicDict()
-        current_content = self.get_content(self.url_of_page(self.url, page, 'ZemAVek'))
+        current_content = self.get_content(self.url_of_page(self.url, page, 'Plus7Dni'))
         # current_content = self.get_file_content(self.url)
         if current_content is None:
-            self.logging.error(f"get_new_articles_by_page got None content with url {self.url_of_page(self.url, page, 'ZemAVek')}")
+            self.logging.error(
+                f"get_new_articles_by_page got None content with url {self.url_of_page(self.url, page, 'Plus7Dni')}")
             return AtomicDict()
-        for article in current_content.find_all('article'):
+        for article in current_content.find_all(class_='article-tile'):
             scraped_article = self.scrape_article(article)
             new_data.add(scraped_article)
 
@@ -53,12 +54,12 @@ class ZemAVek(Scraper):
     @scraper_utils.validate_dict
     def scrape_article(article):
         return {
-            'title': article.h3.a.text,
+            'title': article.find(class_='article-tile__text').find('h2').get_text(),
             'values': {
-                'url': article.find('a')['href'],
-                'time_published': article.find('time')['datetime'],
-                'description': article.find('p').get_text(),
-                'photo': article.find('img')['data-lazy-srcset'].split(' ')[0],
+                'url': article.find(class_='heading')['href'],
+                'time_published': article.find(class_='meta__item meta__item--datetime datetime-default').get_text(),
+                'description': article.find(class_='perex').get_text().strip(),
+                'photo': article.find('img')['data-src'],
                 'tags': '',
                 'author': '',
                 'content': ''
@@ -71,14 +72,14 @@ class ZemAVek(Scraper):
         return {
             'title': title,
             'values': {
-                'tags': article_content.find(class_='tags').get_text().split(' ', 2)[2],
-                'author': article_content.find(class_='author').find('a').get_text(),
-                'content': article_content.find(class_='entry-content').get_text()
+                'tags': '',
+                'author': article_content.find(class_='article-author').find('span').get_text(),
+                'content': article_content.find(class_='article-body').get_text()
             }
         }
 
 
-zav = ZemAVek()
-zav.get_new_articles()
-print(len(zav.data))
-zav.save_data_json(zav.data, site='zem_a_vek')
+p7d = Plus7Dni()
+p7d.get_new_articles()
+print(len(p7d.data))
+p7d.save_data_json(p7d.data, site='plus_7_dni')

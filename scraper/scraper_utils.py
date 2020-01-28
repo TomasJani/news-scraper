@@ -8,7 +8,7 @@ def slow_down(fn):
         sleep_time = randint(1, int(config.get('Settings', 'WaitTime')))
         time.sleep(sleep_time)
         res = fn(*args, **kwargs)
-        # time.sleep(sleep_time)
+        time.sleep(sleep_time)
         return res
 
     return wrapper

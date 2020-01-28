@@ -43,13 +43,16 @@ class Scraper:
             return {}
 
     @staticmethod
-    def url_of_page(url, page):
-        return url + f'page/{page}'
+    def url_of_page(url, page, site):
+        if site == 'ZemAVek':
+            return url + f'page/{page}'
+        elif site == 'Plus7Dni':
+            return url + str(page)
 
     @staticmethod
-    def save_data_json(data, file=f'data/{today_time}.json'):
+    def save_data_json(data, file=f'data/{today_time}.json', site=""): # Refactor
         try:
-            with codecs.open(file, 'w', 'utf-8') as f:
+            with codecs.open(f'data/{site}/{today_time}.json', 'w', 'utf-8') as f:
                 json.dump(data, sort_keys=True, indent=4, separators=(',', ': '), fp=f, ensure_ascii=False)
         except Exception as e:
             logging.error(f'save_data_json could not save data to {file}\n{e}')
