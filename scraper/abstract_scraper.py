@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 
 class Scraper(ABC):
     def __init__(self):
+        self.yesterdays_data = AtomicDict()
         self.data = AtomicDict()
         self.config = config
         self.logging = logging
@@ -50,6 +51,7 @@ class Scraper(ABC):
     def scrape_content(self, title, article_content):
         """Method Doc"""
 
+    @scraper_utils.slow_down
     def get_content(self, url):
         try:
             res = requests.get(url)
@@ -83,10 +85,14 @@ class Scraper(ABC):
 
     @staticmethod
     def url_of_page(url, page, site):
-        if site == 'ZemAVek' or site == 'HlavneSpravy':
-            return url + f'page/{page}'
+        if site == 'ZemAVek' or site == 'HlavneSpravy' or site == "DennikN":
+            return f'{url}page/{page}'
         elif site == 'Plus7Dni':
             return url + str(page)
+        elif site == 'SME':
+            return f'{url}page={page}'
+        else:
+            raise NotImplemented
 
     @staticmethod
     def save_data_json(data, file=f'data/{today_time}.json', site=""):  # Refactor
@@ -95,3 +101,10 @@ class Scraper(ABC):
                 json.dump(data, sort_keys=True, indent=4, separators=(',', ': '), fp=f, ensure_ascii=False)
         except Exception as e:
             logging.error(f'save_data_json could not save data to {file}\n{e}')
+
+    @staticmethod
+    def may_be_empty(fn):
+        if fn is None:
+            return ''
+        else:
+            return fn.get_text()
