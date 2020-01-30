@@ -13,10 +13,10 @@ def get_log_content(path):
         return ""
 
 
-context = ssl.create_default_context()
-n_c = config['MailNotifier']
-
-with smtplib.SMTP_SSL(n_c['SMTPServer'], n_c['Port'], context=context) as server:
-    server.login(n_c['Sender'], n_c['Password'])
-    message = 'Subject: {}\n\n{}'.format(f'Log {today_time}', get_log_content(f'logs/{today_time}.log'))
-    server.sendmail(n_c['Sender'], n_c['Receiver'], message.encode("utf8"))
+def send_logs():
+    context = ssl.create_default_context()
+    n_c = config['MailNotifier']
+    with smtplib.SMTP_SSL(n_c['SMTPServer'], n_c['Port'], context=context) as server:
+        server.login(n_c['Sender'], n_c['Password'])
+        message = 'Subject: {}\n\n{}'.format(f'Log {today_time}', get_log_content(f'logs/{today_time}.log'))
+        server.sendmail(n_c['Sender'], n_c['Receiver'], message.encode("utf8"))

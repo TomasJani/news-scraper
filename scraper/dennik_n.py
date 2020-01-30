@@ -36,7 +36,7 @@ class DennikN(Scraper):
                 'photo': DennikN.get_photo(article),
                 'tags': '',
                 'author': Scraper.may_be_empty(article.find(class_='e_terms_author')),
-                'content': ''
+                 'content': ''
             }
         }
 

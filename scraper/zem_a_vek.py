@@ -44,11 +44,18 @@ class ZemAVek(Scraper):
         return {
             'title': title,
             'values': {
-                'tags': article_content.find(class_='tags').get_text().split(' ', 2)[2],
+                'tags': ZemAVek.get_correct_tags(article_content),
                 'author': article_content.find(class_='author').find('a').get_text(),
                 'content': article_content.find(class_='entry-content').get_text()
             }
         }
+
+    @staticmethod
+    def get_correct_tags(article_content):
+        if article_content.find(class_='tags') is not None:
+            return article_content.find(class_='tags').get_text().split(' ', 2)[2]
+        else:
+            ""
 
 
 zav = ZemAVek()
