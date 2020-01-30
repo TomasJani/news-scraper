@@ -1,6 +1,7 @@
 config.ini
 .idea/
 websites/
+scraper/aktuality.py
 scraper/data/
 scraper/logs/
 scraper/__pycache__/

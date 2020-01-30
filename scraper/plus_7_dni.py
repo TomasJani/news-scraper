@@ -6,7 +6,7 @@ from scraper.atomic_dict import AtomicDict
 class Plus7Dni(Scraper):
     def __init__(self):
         super().__init__()
-        self.yesterdays_data = self.load_json(f'data/plus_7_dni/{self.yesterday_time}.json') or AtomicDict()
+        self.yesterdays_data = self.load_json(f'scraper/data/plus_7_dni/{self.yesterday_time}.json') or AtomicDict()
         self.url = self.config.get('URL', 'Plus7Dni')
 
     @scraper_utils.slow_down
@@ -53,9 +53,3 @@ class Plus7Dni(Scraper):
                 'content': article_content.find(class_='article-body').get_text()
             }
         }
-
-
-p7d = Plus7Dni()
-p7d.get_new_articles()
-print(len(p7d.data))
-p7d.save_data_json(p7d.data, site='plus_7_dni')

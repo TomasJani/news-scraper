@@ -6,7 +6,7 @@ from scraper.atomic_dict import AtomicDict
 class ZemAVek(Scraper):
     def __init__(self):
         super().__init__()
-        self.yesterdays_data = self.load_json(f'data/zem_a_vek/{self.yesterday_time}.json') or AtomicDict()
+        self.yesterdays_data = self.load_json(f'scraper/data/zem_a_vek/{self.yesterday_time}.json') or AtomicDict()
         self.url = self.config.get('URL', 'ZemAVek')
 
     @scraper_utils.slow_down
@@ -56,9 +56,3 @@ class ZemAVek(Scraper):
             return article_content.find(class_='tags').get_text().split(' ', 2)[2]
         else:
             ""
-
-
-zav = ZemAVek()
-zav.get_new_articles()
-print(len(zav.data))
-zav.save_data_json(zav.data, site='zem_a_vek')

@@ -6,7 +6,7 @@ from scraper.atomic_dict import AtomicDict
 class SME(Scraper):
     def __init__(self):
         super().__init__()
-        self.yesterdays_data = self.load_json(f'data/sme/{self.yesterday_time}.json') or AtomicDict()
+        self.yesterdays_data = self.load_json(f'scraper/data/sme/{self.yesterday_time}.json') or AtomicDict()
         self.url = self.config.get('URL', 'SME')
 
     @scraper_utils.slow_down
@@ -57,9 +57,3 @@ class SME(Scraper):
             return ''
         else:
             return article_content.find(class_='article-published-author').get_text()
-
-
-sme = SME()
-sme.get_new_articles()
-print(len(sme.data))
-sme.save_data_json(sme.data, site='sme')

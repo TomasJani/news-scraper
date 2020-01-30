@@ -8,9 +8,9 @@ today_time = datetime.now().strftime("%b_%d_%Y")
 yesterday_time = (datetime.now() - timedelta(days=1)).strftime("%b_%d_%Y")
 
 config = configparser.ConfigParser()
-config.read('../config.ini')
+config.read('config.ini')
 
-logging.basicConfig(filename=f'logs/{today_time}.log',
+logging.basicConfig(filename=f'scraper/logs/{today_time}.log',
                     format='%(asctime)s :: %(filename)s :: %(levelname)s = %(message)s',
                     level=logging.INFO)
 

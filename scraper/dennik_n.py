@@ -6,7 +6,7 @@ from scraper.atomic_dict import AtomicDict
 class DennikN(Scraper):
     def __init__(self):
         super().__init__()
-        self.yesterdays_data = self.load_json(f'data/dennik_n/{self.yesterday_time}.json') or AtomicDict()
+        self.yesterdays_data = self.load_json(f'scraper/data/dennik_n/{self.yesterday_time}.json') or AtomicDict()
         self.url = self.config.get('URL', 'DennikN')
 
     @scraper_utils.slow_down
@@ -36,7 +36,7 @@ class DennikN(Scraper):
                 'photo': DennikN.get_photo(article),
                 'tags': '',
                 'author': Scraper.may_be_empty(article.find(class_='e_terms_author')),
-                 'content': ''
+                'content': ''
             }
         }
 
@@ -73,9 +73,3 @@ class DennikN(Scraper):
             return article_content.find(class_='e_tag').get_text()
         else:
             return ""
-
-
-dn = DennikN()
-dn.get_new_articles()
-print(len(dn.data))
-dn.save_data_json(dn.data, site='dennik_n')

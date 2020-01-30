@@ -95,9 +95,9 @@ class Scraper(ABC):
             raise NotImplemented
 
     @staticmethod
-    def save_data_json(data, file=f'data/{today_time}.json', site=""):  # Refactor
+    def save_data_json(data, file=f'scraper/data/{today_time}.json', site=""):  # Refactor
         try:
-            with codecs.open(f'data/{site}/{today_time}.json', 'w', 'utf-8') as f:
+            with codecs.open(f'scraper/data/{site}/{today_time}.json', 'w', 'utf-8') as f:
                 json.dump(data, sort_keys=True, indent=4, separators=(',', ': '), fp=f, ensure_ascii=False)
         except Exception as e:
             logging.error(f'save_data_json could not save data to {file}\n{e}')
