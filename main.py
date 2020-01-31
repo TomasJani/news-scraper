@@ -53,7 +53,7 @@ def scrape_all():
     send_logs()
 
 
-schedule.every().day.at('05:00').do(scrape_all())
+schedule.every().day.at('05:00').do(scrape_all)
 
 while True:
     schedule.run_pending()

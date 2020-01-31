@@ -18,5 +18,5 @@ def send_logs():
     n_c = config['MailNotifier']
     with smtplib.SMTP_SSL(n_c['SMTPServer'], n_c['Port'], context=context) as server:
         server.login(n_c['Sender'], n_c['Password'])
-        message = 'Subject: {}\n\n{}'.format(f'Log {today_time}', get_log_content(f'logs/{today_time}.log'))
+        message = 'Subject: {}\n\n{}'.format(f'Log {today_time}', get_log_content(f'scraper/logs/{today_time}.log'))
         server.sendmail(n_c['Sender'], n_c['Receiver'], message.encode("utf8"))
