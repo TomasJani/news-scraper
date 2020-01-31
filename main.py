@@ -13,7 +13,7 @@ def zav_scrape():
     zav = ZemAVek()
     zav.get_new_articles()
     print(len(zav.data))
-    zav.save_data_json(zav.data)
+    zav.save_data_json(zav.data, site='zem_a_vek')
 
 
 def hs_scraper():

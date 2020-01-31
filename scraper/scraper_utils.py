@@ -29,3 +29,4 @@ def validate_dict(fn):
 
 # Random scrape time
 # If running longer than x -> Kill
+# Delete files after a while
