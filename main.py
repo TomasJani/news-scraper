@@ -1,6 +1,7 @@
 import schedule
 import time
 
+from scraper.bootstrap import update_time
 from scraper.dennik_n import DennikN
 from scraper.hlavne_spravy import HlavneSpravy
 from scraper.mail_notifier import send_logs
@@ -45,6 +46,7 @@ def sme_scraper():
 
 
 def scrape_all():
+    update_time()
     zav_scrape()
     p7d_scraper()
     dn_scraper()
@@ -52,7 +54,7 @@ def scrape_all():
     sme_scraper()
     send_logs()
 
-
+send_logs()
 schedule.every().day.at('05:00').do(scrape_all)
 
 while True:
