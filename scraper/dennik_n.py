@@ -9,6 +9,13 @@ class DennikN(Scraper):
         self.yesterdays_data = self.load_json(f'scraper/data/dennik_n/{self.yesterday_time}.json') or AtomicDict()
         self.url = self.config.get('URL', 'DennikN')
 
+    @staticmethod
+    def main():
+        dn = DennikN()
+        dn.get_new_articles()
+        print(len(dn.data))
+        dn.save_data_json(dn.data, site='dennik_n')
+
     @scraper_utils.slow_down
     def get_new_articles_by_page(self, page):
         new_data = AtomicDict()
@@ -40,13 +47,6 @@ class DennikN(Scraper):
             }
         }
 
-    @staticmethod
-    def get_photo(article):
-        if article.find('img') is not None:
-            return article.find('img')['data-src']
-        else:
-            return ""
-
     @scraper_utils.validate_dict
     def scrape_content(self, title, article_content):
         return {
@@ -56,6 +56,13 @@ class DennikN(Scraper):
                 'content': self.get_correct_content(article_content)
             }
         }
+
+    @staticmethod
+    def get_photo(article):
+        if article.find('img') is not None:
+            return article.find('img')['data-src']
+        else:
+            return ""
 
     def get_correct_content(self, article_content):
         if article_content.find(class_='a_single__post') is not None:

@@ -9,6 +9,13 @@ class ZemAVek(Scraper):
         self.yesterdays_data = self.load_json(f'scraper/data/zem_a_vek/{self.yesterday_time}.json') or AtomicDict()
         self.url = self.config.get('URL', 'ZemAVek')
 
+    @staticmethod
+    def main():
+        zav = ZemAVek()
+        zav.get_new_articles()
+        print(len(zav.data))
+        zav.save_data_json(zav.data, site='zem_a_vek')
+
     @scraper_utils.slow_down
     def get_new_articles_by_page(self, page):
         new_data = AtomicDict()

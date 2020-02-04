@@ -9,6 +9,13 @@ class HlavneSpravy(Scraper):
         self.yesterdays_data = self.load_json(f'scraper/data/hlavne_spravy/{self.yesterday_time}.json') or AtomicDict()
         self.url = self.config.get('URL', 'HlavneSpravy')
 
+    @staticmethod
+    def main():
+        hs = HlavneSpravy()
+        hs.get_new_articles()
+        print(len(hs.data))
+        hs.save_data_json(hs.data, site='hlavne_spravy')
+
     @scraper_utils.slow_down
     def get_new_articles_by_page(self, page):
         new_data = AtomicDict()

@@ -9,6 +9,13 @@ class SME(Scraper):
         self.yesterdays_data = self.load_json(f'scraper/data/sme/{self.yesterday_time}.json') or AtomicDict()
         self.url = self.config.get('URL', 'SME')
 
+    @staticmethod
+    def main():
+        sme = SME()
+        sme.get_new_articles()
+        print(len(sme.data))
+        sme.save_data_json(sme.data, site='sme')
+
     @scraper_utils.slow_down
     def get_new_articles_by_page(self, page):
         new_data = AtomicDict()

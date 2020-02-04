@@ -9,6 +9,13 @@ class Plus7Dni(Scraper):
         self.yesterdays_data = self.load_json(f'scraper/data/plus_7_dni/{self.yesterday_time}.json') or AtomicDict()
         self.url = self.config.get('URL', 'Plus7Dni')
 
+    @staticmethod
+    def main():
+        p7d = Plus7Dni()
+        p7d.get_new_articles()
+        print(len(p7d.data))
+        p7d.save_data_json(p7d.data, site='plus_7_dni')
+
     @scraper_utils.slow_down
     def get_new_articles_by_page(self, page):
         new_data = AtomicDict()

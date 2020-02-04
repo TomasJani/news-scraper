@@ -22,7 +22,3 @@ for directory in ['scraper/data', 'scraper/logs', 'scraper/data/dennik_n', 'scra
                   'scraper/data/plus_7_dni', 'scraper/data/sme', 'scraper/data/zem_a_vek']:
     if not os.path.exists(directory):
         os.makedirs(directory)
-
-logging.basicConfig(filename=f'scraper/logs/{today_time}.log',
-                    format='%(asctime)s :: %(filename)s :: %(levelname)s = %(message)s',
-                    level=logging.INFO)
