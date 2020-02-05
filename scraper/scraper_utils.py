@@ -1,7 +1,8 @@
 import time
-from random import randint
+import logging
 
-from scraper.bootstrap import config, logging
+from random import randint
+from scraper import config
 
 
 def slow_down(fn):

@@ -38,7 +38,7 @@ class HlavneSpravy(Scraper):
             'values': {
                 'url': article.find('a')['href'],
                 'time_published': '',
-                'description': article.find('p').get_text(),
+                'description': article.find('p').get_text(),  # refactor
                 'photo': article.find(class_='post-thumb')['style'],
                 'tags': '',
                 'author': '',
@@ -52,9 +52,9 @@ class HlavneSpravy(Scraper):
         return {
             'title': title,
             'values': {
-                'time_published': article_content.find(class_='article-content').find('p').get_text(),
+                'time_published': article_content.find(class_='article-content').find('p').get_text(),  # refactor
                 'tags': '',
-                'author': '',  # Reconsider
-                'content': article_content.find(class_='article-content').get_text().strip()
+                'author': '',
+                'content': article_content.find(class_='article-content').get_text().strip()  # refactor
             }
         }

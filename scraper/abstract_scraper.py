@@ -2,11 +2,12 @@ import abc
 import codecs
 import json
 import requests
+import logging
 
 from abc import ABC
 from scraper import scraper_utils
 from scraper.atomic_dict import AtomicDict
-from scraper.bootstrap import today_time, config, logging, yesterday_time
+from scraper import today_time, config, yesterday_time
 from bs4 import BeautifulSoup
 
 
@@ -45,7 +46,10 @@ class Scraper(ABC):
                 continue
             additional_data = self.scrape_content(title, article_content)
             self.data.add_additional_data(additional_data)
-            self.logging.info(f'(({title})) added to file DB')
+            try:
+                self.logging.info(f'(({title})) added to file DB')
+            except UnicodeEncodeError as e:
+                self.logging.info(f'((title was successfully added but can not encode name))\n{e}')
 
     @abc.abstractmethod
     def scrape_content(self, title, article_content):

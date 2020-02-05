@@ -36,7 +36,6 @@ class DennikN(Scraper):
         return {
             'title': article.span.text,
             'values': {
-                # 'url': article.find('a')['href'],
                 'url': article.find(class_='a_art_b').find('a', recursive=False)['href'],
                 'time_published': article.find('time').get_text(),
                 'description': Scraper.may_be_empty(article.find('p')),

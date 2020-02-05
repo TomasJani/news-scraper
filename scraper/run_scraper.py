@@ -1,7 +1,9 @@
 import time
 import schedule
+import logging
 
-from scraper.bootstrap import update_time, logging, today_time
+from scraper import update_time, today_time
+from scraper.mail_notifier import send_logs
 from scraper.dennik_n import DennikN
 from scraper.hlavne_spravy import HlavneSpravy
 from scraper.plus_7_dni import Plus7Dni
@@ -19,6 +21,7 @@ def set_and_scrape():
     Plus7Dni.main()
     SME.main()
     ZemAVek.main()
+    send_logs()
 
 
 schedule.every().day.at('05:00').do(set_and_scrape)

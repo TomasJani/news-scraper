@@ -38,8 +38,8 @@ class SME(Scraper):
             'values': {
                 'url': article.find('a')['href'],
                 'time_published': article.find('small').get_text(),
-                'description': article.find('p').get_text(),
-                'photo': article.find('img')['src'],
+                'description': article.find('p').get_text(),  # refactor
+                'photo': article.find('img')['src'],  # refactor
                 'tags': '',
                 'author': '',
                 'content': ''
@@ -54,7 +54,7 @@ class SME(Scraper):
             'values': {
                 'tags': '',
                 'author': Scraper.may_be_empty(article_content.find(class_='article-published-author')),
-                'content': article_content.find('article').get_text().strip()
+                'content': article_content.find('article').get_text().strip()  # refactor
             }
         }
 

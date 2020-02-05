@@ -2,8 +2,11 @@ config.ini
 __pycache__/
 .idea/
 websites/
+
 scraper/aktuality.py
 scraper/data/
 scraper/logs/
 scraper/__pycache__/
+
 api/__pycache__
+api/testing.db

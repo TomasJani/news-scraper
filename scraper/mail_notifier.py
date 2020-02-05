@@ -1,7 +1,9 @@
 import codecs
 import smtplib
 import ssl
-from scraper.bootstrap import logging, config, today_time
+import logging
+
+from scraper import config, today_time
 
 
 def get_log_content(path):

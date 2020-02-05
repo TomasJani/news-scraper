@@ -1,4 +1,6 @@
-from scraper.bootstrap import config, logging
+import logging
+
+from scraper import config
 from functools import wraps
 
 
