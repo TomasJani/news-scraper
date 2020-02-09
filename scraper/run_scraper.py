@@ -2,6 +2,7 @@ import time
 import schedule
 import logging
 
+from datetime import datetime
 from scraper import update_time, today_time
 from scraper.mail_notifier import send_logs
 from scraper.dennik_n import DennikN
@@ -12,15 +13,16 @@ from scraper.zem_a_vek import ZemAVek
 
 
 def set_and_scrape():
+    print(f'Started at: {datetime.now()}')
     logging.basicConfig(filename=f'scraper/logs/{today_time}.log',
                         format='%(asctime)s :: %(filename)s :: %(levelname)s = %(message)s',
                         level=logging.INFO)
     update_time()
-    DennikN.main()
+    # DennikN.main()
     HlavneSpravy.main()
-    Plus7Dni.main()
-    SME.main()
-    ZemAVek.main()
+    # Plus7Dni.main()
+    # SME.main()
+    # ZemAVek.main()
     send_logs()
 
 

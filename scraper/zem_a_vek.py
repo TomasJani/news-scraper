@@ -35,6 +35,7 @@ class ZemAVek(Scraper):
         return {
             'title': article.h3.a.text,
             'values': {
+                'site': 'zem_a_vek',
                 'url': article.find('a')['href'],
                 'time_published': article.find('time')['datetime'],
                 'description': article.find('p').get_text(),

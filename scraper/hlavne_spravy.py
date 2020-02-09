@@ -36,12 +36,13 @@ class HlavneSpravy(Scraper):
         return {
             'title': article.h3.text,
             'values': {
+                'site': 'hlavne_spravy',
                 'url': article.find('a')['href'],
                 'time_published': '',
                 'description': article.find('p').get_text(),  # refactor
                 'photo': article.find(class_='post-thumb')['style'],
                 'tags': '',
-                'author': '',
+                'author': 'Hlavné Správy',
                 'content': ''
             }
         }
@@ -54,7 +55,6 @@ class HlavneSpravy(Scraper):
             'values': {
                 'time_published': article_content.find(class_='article-content').find('p').get_text(),  # refactor
                 'tags': '',
-                'author': '',
                 'content': article_content.find(class_='article-content').get_text().strip()  # refactor
             }
         }

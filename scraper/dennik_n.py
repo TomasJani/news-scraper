@@ -36,12 +36,13 @@ class DennikN(Scraper):
         return {
             'title': article.span.text,
             'values': {
+                'site': 'dennik_n',
                 'url': article.find(class_='a_art_b').find('a', recursive=False)['href'],
                 'time_published': article.find('time').get_text(),
                 'description': Scraper.may_be_empty(article.find('p')),
                 'photo': DennikN.get_photo(article),
                 'tags': '',
-                'author': Scraper.may_be_empty(article.find(class_='e_terms_author')),
+                'author': Scraper.may_be_empty(article.find(class_='e_terms_author')),  # else Dennik N
                 'content': ''
             }
         }
@@ -72,7 +73,8 @@ class DennikN(Scraper):
             self.logging.error('get_correct_content can not find correct classes')
             return ""
 
-    def get_correct_tags(self, article_content):
+    @staticmethod
+    def get_correct_tags(article_content):
         if article_content.find(class_='e_terms') is not None:
             return article_content.find(class_='e_terms').get_text()
         elif article_content.find(class_='e_tag') is not None:

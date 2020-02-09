@@ -36,6 +36,7 @@ class SME(Scraper):
         return {
             'title': article.h2.a.text,
             'values': {
+                'site': 'sme',
                 'url': article.find('a')['href'],
                 'time_published': article.find('small').get_text(),
                 'description': article.find('p').get_text(),  # refactor

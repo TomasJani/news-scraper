@@ -1,4 +1,8 @@
-from api import app
+import logging
+
+from api import app, db
+from api.db_utils import load_yesterday_data
+from api.models import Article
 
 
 @app.route('/')
@@ -8,22 +12,26 @@ def home_page():
     return '<h1>Hello You</h1>'
 
 
-class AddToDb:
+# Route for searching
+# Save searches & searches only for registered users
+
+class AddToDb:  # new file
     def __init__(self):
-        self.today_data = ""
+        self.yesterday_data = load_yesterday_data()
 
-    @app.route('/add', methods=['Post'])
-    def add_today_data(self):
-        # load files - use for all functions once
-        # send to DB
-        pass
+    def add_yesterday_data(self):
+        for title, values in self.yesterday_data.items():
+            try:
+                db.session.add(Article.from_dict_data(title, values))
+                db.session.commit()  # how often to commit?
+            except Exception as e:
+                db.session.rollback()
+                logging.error(f'title {title} can not be added to DB\n{e}')
 
-    @app.route('/add/words', methods=['Post'])
     def add_words_analysis(self):
         # search with regex
         pass
 
-    @app.route('/add/semantic', methods=['Post'])
     def add_semantic_analysis(self):
         # Google API
         pass
