@@ -16,7 +16,6 @@ class Scraper(ABC):
         self.yesterdays_data = AtomicDict()
         self.data = AtomicDict()
         self.config = config
-        self.logging = logging
         self.yesterday_time = yesterday_time
 
     def get_new_articles(self):
@@ -26,7 +25,7 @@ class Scraper(ABC):
         while still_new and page <= max_page:
             new_data = self.get_new_articles_by_page(page)
             if len(new_data) == 0:
-                self.logging.error(f'get_new_articles is not getting new data from {self.url} at {page} page')
+                logging.error(f'get_new_articles is not getting new data from {self.url} at {page} page')
             still_new = self.data.add_all(new_data, self.yesterdays_data)
             page += 1
 
@@ -41,15 +40,15 @@ class Scraper(ABC):
         for title, article_info in self.data.items():
             article_content = self.get_content(article_info['url'])
             if article_content is None:
-                self.logging.error(
+                logging.error(
                     f"get_from_article got None content with url {self.get_content(article_info['url'])}")
                 continue
             additional_data = self.scrape_content(title, article_content)
             self.data.add_additional_data(additional_data)
             try:
-                self.logging.info(f'(({title})) added to file DB')
+                logging.info(f'(({title})) added to file DB')
             except UnicodeEncodeError as e:
-                self.logging.info(f'((title was successfully added but can not encode name))\n{e}')
+                logging.info(f'((title was successfully added but can not encode name))\n{e}')
 
     @abc.abstractmethod
     def scrape_content(self, title, article_content):
@@ -61,10 +60,10 @@ class Scraper(ABC):
             res = requests.get(url)
             soup = BeautifulSoup(res.text, 'html.parser')
         except requests.exceptions.RequestException as e:
-            self.logging.error(f'Problem with request.get called on url {url}\n{e}')
+            logging.error(f'Problem with request.get called on url {url}\n{e}')
             return None
         except Exception as e:  # HtmlParser
-            self.logging.error(f'Problem with beautiful soap parsing html at url {url}\n{e}')
+            logging.error(f'Problem with beautiful soap parsing html at url {url}\n{e}')
         else:
             return soup.body
 
@@ -84,7 +83,7 @@ class Scraper(ABC):
                 read = f.read()
                 return json.loads(read)
         except Exception as e:
-            self.logging.error(f'load_json cannot harvest data from date {file}\n{e}')
+            logging.error(f'load_json cannot harvest data from date {file}\n{e}')
             return {}
 
     @staticmethod
@@ -107,8 +106,8 @@ class Scraper(ABC):
             logging.error(f'save_data_json could not save data to {file}\n{e}')
 
     @staticmethod
-    def may_be_empty(fn):
+    def may_be_empty(fn, replacement=''):
         if fn is None:
-            return ''
+            return replacement
         else:
             return fn.get_text()

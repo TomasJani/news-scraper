@@ -18,11 +18,11 @@ def set_and_scrape():
                         format='%(asctime)s :: %(filename)s :: %(levelname)s = %(message)s',
                         level=logging.INFO)
     update_time()
-    # DennikN.main()
+    DennikN.main()
     HlavneSpravy.main()
-    # Plus7Dni.main()
-    # SME.main()
-    # ZemAVek.main()
+    Plus7Dni.main()
+    SME.main()
+    ZemAVek.main()
     send_logs()
 
 

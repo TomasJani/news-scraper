@@ -1,3 +1,7 @@
+import logging
+import re
+from datetime import datetime
+
 from scraper import scraper_utils
 from scraper.abstract_scraper import Scraper
 from scraper.atomic_dict import AtomicDict
@@ -21,7 +25,7 @@ class HlavneSpravy(Scraper):
         new_data = AtomicDict()
         current_content = self.get_content(self.url_of_page(self.url, page, 'HlavneSpravy'))
         if current_content is None:
-            self.logging.error(
+            logging.error(
                 f"get_new_articles_by_page got None content with url {self.url_of_page(self.url, page, 'HlavneSpravy')}")
             return AtomicDict()
         for article in current_content.find_all(class_='t6'):
@@ -38,11 +42,12 @@ class HlavneSpravy(Scraper):
             'values': {
                 'site': 'hlavne_spravy',
                 'url': article.find('a')['href'],
-                'time_published': '',
-                'description': article.find('p').get_text(),  # refactor
-                'photo': article.find(class_='post-thumb')['style'],
+                'time_published': datetime.utcnow().strftime("%b_%d_%Y"),
+                'description': article.find('p').get_text().split('   ', 1)[1],
+                'photo': re.search(r"background-image: url\('(.*?)'\);",
+                                   article.find(class_='post-thumb')['style']).group(1),
                 'tags': '',
-                'author': 'Hlavné Správy',
+                'author': 'HLAVNÉ SPRÁVY',
                 'content': ''
             }
         }
@@ -53,8 +58,14 @@ class HlavneSpravy(Scraper):
         return {
             'title': title,
             'values': {
-                'time_published': article_content.find(class_='article-content').find('p').get_text(),  # refactor
                 'tags': '',
-                'content': article_content.find(class_='article-content').get_text().strip()  # refactor
+                'content': HlavneSpravy.get_correct_content(article_content)
             }
         }
+
+    @staticmethod
+    def get_correct_content(article_content):
+        text = article_content.find(class_='article-content')
+        for script in text.find_all('script'):
+            script.decompose()
+        return text.get_text().split('Nahlásiť chybu v článku', 1)[0].strip()  # refactor

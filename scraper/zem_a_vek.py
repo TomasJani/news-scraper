@@ -1,3 +1,5 @@
+import logging
+
 from scraper import scraper_utils
 from scraper.abstract_scraper import Scraper
 from scraper.atomic_dict import AtomicDict
@@ -21,7 +23,8 @@ class ZemAVek(Scraper):
         new_data = AtomicDict()
         current_content = self.get_content(self.url_of_page(self.url, page, 'ZemAVek'))
         if current_content is None:
-            self.logging.error(f"get_new_articles_by_page got None content with url {self.url_of_page(self.url, page, 'ZemAVek')}")
+            logging.error(
+                f"get_new_articles_by_page got None content with url {self.url_of_page(self.url, page, 'ZemAVek')}")
             return AtomicDict()
         for article in current_content.find_all('article'):
             scraped_article = self.scrape_article(article)
@@ -39,7 +42,7 @@ class ZemAVek(Scraper):
                 'url': article.find('a')['href'],
                 'time_published': article.find('time')['datetime'],
                 'description': article.find('p').get_text(),
-                'photo': article.find('img')['data-lazy-srcset'].split(' ')[0],
+                'photo': article.find('img')['data-lazy-src'],
                 'tags': '',
                 'author': '',
                 'content': ''
@@ -54,7 +57,7 @@ class ZemAVek(Scraper):
             'values': {
                 'tags': ZemAVek.get_correct_tags(article_content),
                 'author': article_content.find(class_='author').find('a').get_text(),
-                'content': article_content.find(class_='entry-content').get_text()
+                'content': ZemAVek.get_correct_content(article_content)
             }
         }
 
@@ -64,3 +67,9 @@ class ZemAVek(Scraper):
             return article_content.find(class_='tags').get_text().split(' ', 2)[2]
         else:
             ""
+    @staticmethod
+    def get_correct_content(article_content):
+        text = article_content.find(class_='entry-content')
+        for script in text.find_all('script'):
+            script.decompose()
+        return text.get_text().split('Zdroje:', 1)[0]  # conformation

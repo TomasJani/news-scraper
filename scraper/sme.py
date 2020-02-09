@@ -1,3 +1,5 @@
+import logging
+
 from scraper import scraper_utils
 from scraper.abstract_scraper import Scraper
 from scraper.atomic_dict import AtomicDict
@@ -21,7 +23,7 @@ class SME(Scraper):
         new_data = AtomicDict()
         current_content = self.get_content(self.url_of_page(self.url, page, 'SME'))
         if current_content is None:
-            self.logging.error(
+            logging.error(
                 f"get_new_articles_by_page got None content with url {self.url_of_page(self.url, page, 'SME')}")
             return AtomicDict()
         for article in current_content.find_all(class_='js-article'):
@@ -30,17 +32,16 @@ class SME(Scraper):
 
         return new_data
 
-    @staticmethod
     @scraper_utils.validate_dict
-    def scrape_article(article):
+    def scrape_article(self, article):
         return {
             'title': article.h2.a.text,
             'values': {
                 'site': 'sme',
                 'url': article.find('a')['href'],
                 'time_published': article.find('small').get_text(),
-                'description': article.find('p').get_text(),  # refactor
-                'photo': article.find('img')['src'],  # refactor
+                'description': article.find('p').get_text().split('   ', 1)[0],
+                'photo': SME.get_correct_photo(article),
                 'tags': '',
                 'author': '',
                 'content': ''
@@ -53,15 +54,27 @@ class SME(Scraper):
         return {
             'title': title,
             'values': {
-                'tags': '',
-                'author': Scraper.may_be_empty(article_content.find(class_='article-published-author')),
-                'content': article_content.find('article').get_text().strip()  # refactor
+                'author': Scraper.may_be_empty(article_content.find(class_='article-published-author'), replacement="SME"),
+                'content': SME.get_correct_content(article_content)
             }
         }
 
     @staticmethod
-    def get_author(article_content):
-        if article_content.find(class_='article-published-author') is None:
-            return ''
-        else:
-            return article_content.find(class_='article-published-author').get_text()
+    def get_correct_photo(article):
+        try:
+            return article.find('img')['data-src']
+        except:  # make safe
+            try:
+                return article.find('img')['src']
+            except:
+                logging.error('photo can not be found')
+
+    @staticmethod
+    def get_correct_content(article_content):
+        text = article_content.find('article')
+        for script in text.find_all('script'):
+            script.decompose()
+        for ad in text.find_all(class_='artemis-promo-labels'):
+            ad.decompose()
+        text.find(class_='share-box').decompose()
+        return text.get_text().strip()

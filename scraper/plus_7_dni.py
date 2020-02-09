@@ -1,3 +1,5 @@
+import logging
+
 from scraper import scraper_utils
 from scraper.abstract_scraper import Scraper
 from scraper.atomic_dict import AtomicDict
@@ -21,7 +23,7 @@ class Plus7Dni(Scraper):
         new_data = AtomicDict()
         current_content = self.get_content(self.url_of_page(self.url, page, 'Plus7Dni'))
         if current_content is None:
-            self.logging.error(
+            logging.error(
                 f"get_new_articles_by_page got None content with url {self.url_of_page(self.url, page, 'Plus7Dni')}")
             return AtomicDict()
 
@@ -56,7 +58,6 @@ class Plus7Dni(Scraper):
         return {
             'title': title,
             'values': {
-                'tags': '',
                 'author': article_content.find(class_='article-author').find('span').get_text(),
                 'content': article_content.find(class_='article-body').get_text()
             }
