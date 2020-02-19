@@ -2,7 +2,7 @@ import logging
 import re
 from datetime import datetime
 
-from scraper import scraper_utils
+from scraper import scraper_utils, LOGGING_FORMAT, DATE_TIME_FORMAT
 from scraper.abstract_scraper import Scraper
 from scraper.atomic_dict import AtomicDict
 
@@ -41,9 +41,10 @@ class HlavneSpravy(Scraper):
             'title': article.h3.text,
             'values': {
                 'site': 'hlavne_spravy',
+                'category': 'domov',
                 'url': article.find('a')['href'],
-                'time_published': datetime.utcnow().strftime("%b_%d_%Y"),
-                'description': article.find('p').get_text().split('   ', 1)[1],
+                'time_published': datetime.utcnow().strftime(DATE_TIME_FORMAT),
+                'description': article.find('p').get_text().split('   ', 1)[1],  # refactor
                 'photo': re.search(r"background-image: url\('(.*?)'\);",
                                    article.find(class_='post-thumb')['style']).group(1),
                 'tags': '',
@@ -58,7 +59,6 @@ class HlavneSpravy(Scraper):
         return {
             'title': title,
             'values': {
-                'tags': '',
                 'content': HlavneSpravy.get_correct_content(article_content)
             }
         }

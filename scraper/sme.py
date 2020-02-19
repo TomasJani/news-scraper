@@ -1,6 +1,6 @@
 import logging
 
-from scraper import scraper_utils
+from scraper import scraper_utils, LOGGING_FORMAT
 from scraper.abstract_scraper import Scraper
 from scraper.atomic_dict import AtomicDict
 
@@ -38,8 +38,9 @@ class SME(Scraper):
             'title': article.h2.a.text,
             'values': {
                 'site': 'sme',
+                'category': 'domov',
                 'url': article.find('a')['href'],
-                'time_published': article.find('small').get_text(),
+                'time_published': SME.get_correct_date(article.find('small').get_text()),
                 'description': article.find('p').get_text().split('   ', 1)[0],
                 'photo': SME.get_correct_photo(article),
                 'tags': '',
@@ -54,7 +55,8 @@ class SME(Scraper):
         return {
             'title': title,
             'values': {
-                'author': Scraper.may_be_empty(article_content.find(class_='article-published-author'), replacement="SME"),
+                'author': Scraper.may_be_empty(article_content.find(class_='article-published-author'),
+                                               replacement="SME"),
                 'content': SME.get_correct_content(article_content)
             }
         }
@@ -78,3 +80,11 @@ class SME(Scraper):
             ad.decompose()
         text.find(class_='share-box').decompose()
         return text.get_text().strip()
+
+    @staticmethod
+    def get_correct_date(time_str):
+        months = ['', 'jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec']
+        time_str = time_str.translate({ord(i): None for i in '.,'})
+        day, month, year, _, time, _ = time_str.split(' ')
+        month_str = '{:02d}'.format(months.index(month))
+        return f'{year}-{month_str}-{day} {time}'

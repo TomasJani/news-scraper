@@ -1,6 +1,7 @@
 import logging
+from datetime import datetime
 
-from scraper import scraper_utils
+from scraper import scraper_utils, LOGGING_FORMAT, DATE_TIME_FORMAT
 from scraper.abstract_scraper import Scraper
 from scraper.atomic_dict import AtomicDict
 
@@ -39,8 +40,9 @@ class ZemAVek(Scraper):
             'title': article.h3.a.text,
             'values': {
                 'site': 'zem_a_vek',
+                'category': 'domov',
                 'url': article.find('a')['href'],
-                'time_published': article.find('time')['datetime'],
+                'time_published': ZemAVek.time_formater(article),
                 'description': article.find('p').get_text(),
                 'photo': article.find('img')['data-lazy-src'],
                 'tags': '',
@@ -48,6 +50,11 @@ class ZemAVek(Scraper):
                 'content': ''
             }
         }
+
+    @staticmethod
+    def time_formater(article):
+        corrected_datetime = article.find('time')['datetime'][:-2] + ':' + article.find('time')['datetime'][-2:]
+        return datetime.fromisoformat(corrected_datetime).strftime(DATE_TIME_FORMAT)
 
     @staticmethod
     @scraper_utils.validate_dict
@@ -67,6 +74,7 @@ class ZemAVek(Scraper):
             return article_content.find(class_='tags').get_text().split(' ', 2)[2]
         else:
             ""
+
     @staticmethod
     def get_correct_content(article_content):
         text = article_content.find(class_='entry-content')

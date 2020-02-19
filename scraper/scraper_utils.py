@@ -24,7 +24,7 @@ def validate_dict(fn):
             logging.error(f'validation problem\n{e}')
             return None
         else:
-             return res
+            return res
 
     return wrapper
 

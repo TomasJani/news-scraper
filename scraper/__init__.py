@@ -1,18 +1,21 @@
 import configparser
 import os
 
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
-today_time = datetime.now().strftime("%b_%d_%Y")
-yesterday_time = (datetime.now() - timedelta(days=1)).strftime("%b_%d_%Y")
+LOGGING_FORMAT = '%(asctime)s :: %(levelname)s = %(message)s'
+TIME_FORMAT = "%Y-%m-%d"
+DATE_TIME_FORMAT = f'{TIME_FORMAT} %H:%M'
+WEB_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
+today_time = datetime.utcnow().strftime(TIME_FORMAT)
+yesterday_time = (datetime.utcnow() - timedelta(days=1)).strftime(TIME_FORMAT)
 
 
 def update_time():
     global today_time
     global yesterday_time
-    today_time = datetime.now().strftime("%b_%d_%Y")
-    yesterday_time = (datetime.now() - timedelta(days=1)).strftime("%b_%d_%Y")
+    today_time = datetime.now().strftime(TIME_FORMAT)
+    yesterday_time = (datetime.now() - timedelta(days=1)).strftime(TIME_FORMAT)
 
 
 config = configparser.ConfigParser()
@@ -24,4 +27,4 @@ for directory in ['scraper/data', 'scraper/logs', 'scraper/data/dennik_n', 'scra
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-from scraper.run_scraper import start, set_and_scrape
+from scraper.execute import start, set_and_scrape

@@ -1,6 +1,7 @@
 import logging
 
-from scraper import scraper_utils
+from datetime import datetime
+from scraper import scraper_utils, LOGGING_FORMAT, DATE_TIME_FORMAT
 from scraper.abstract_scraper import Scraper
 from scraper.atomic_dict import AtomicDict
 
@@ -39,8 +40,9 @@ class DennikN(Scraper):
             'title': article.span.text,
             'values': {
                 'site': 'dennik_n',
+                'category': 'domov',
                 'url': article.find(class_='a_art_b').find('a', recursive=False)['href'],
-                'time_published': article.find('time').get_text(),
+                'time_published': datetime.fromisoformat(article.find('time')['datetime']).strftime(DATE_TIME_FORMAT),
                 'description': Scraper.may_be_empty(article.find('p')),
                 'photo': DennikN.get_photo(article),
                 'tags': '',
@@ -54,7 +56,7 @@ class DennikN(Scraper):
         return {
             'title': title,
             'values': {
-                'tags': self.get_correct_tags(article_content),  # refactor
+                'tags': self.get_correct_tags(article_content),
                 'content': DennikN.get_correct_content(article_content)
             }
         }
@@ -81,7 +83,7 @@ class DennikN(Scraper):
         find_tag = article_content.find(class_='e_terms')
         if find_tag is not None:
             find_tag.find('time').decompose()
-            return find_tag.get_text(separator=' ')
+            return find_tag.get_text(separator=', ')
         elif article_content.find(class_='e_tag') is not None:
             return article_content.find(class_='e_tag').get_text()
         else:

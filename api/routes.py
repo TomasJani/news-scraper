@@ -1,7 +1,7 @@
 import logging
 
 from api import app, db
-from api.db_utils import load_yesterday_data
+from api.db_utils import load_yesterday_data, save_unsaved_db_data
 from api.models import Article
 
 
@@ -20,13 +20,16 @@ class AddToDb:  # new file
         self.yesterday_data = load_yesterday_data()
 
     def add_yesterday_data(self):
+        unsaved_data = {}
         for title, values in self.yesterday_data.items():
             try:
                 db.session.add(Article.from_dict_data(title, values))
                 db.session.commit()  # how often to commit?
             except Exception as e:
+                unsaved_data[title] = values
                 db.session.rollback()
                 logging.error(f'title {title} can not be added to DB\n{e}')
+        save_unsaved_db_data(unsaved_data)
 
     def add_words_analysis(self):
         # search with regex
