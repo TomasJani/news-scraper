@@ -1,4 +1,4 @@
-from scraper import scraper_utils, today_time, yesterday_time, root_logger as logging
+from scraper import scraper_utils, today_time, yesterday_time, root_logger as logging, SCRAPER_DIR
 from scraper.abstract_scraper import Scraper
 from scraper.atomic_dict import AtomicDict
 
@@ -6,7 +6,8 @@ from scraper.atomic_dict import AtomicDict
 class Plus7Dni(Scraper):
     def __init__(self):
         super().__init__()
-        self.yesterdays_data = self.load_json(f'scraper/data/plus_7_dni/{self.yesterday_time}.json') or AtomicDict()
+        self.yesterdays_data = self.load_json(
+            f'{SCRAPER_DIR}/data/plus_7_dni/{self.yesterday_time}.json') or AtomicDict()
         self.url = self.config.get('URL', 'Plus7Dni')
 
     @staticmethod

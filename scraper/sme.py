@@ -1,4 +1,4 @@
-from scraper import scraper_utils, root_logger as logging
+from scraper import scraper_utils, root_logger as logging, SCRAPER_DIR
 from scraper.abstract_scraper import Scraper
 from scraper.atomic_dict import AtomicDict
 
@@ -6,7 +6,8 @@ from scraper.atomic_dict import AtomicDict
 class SME(Scraper):
     def __init__(self):
         super().__init__()
-        self.yesterdays_data = self.load_json(f'scraper/data/sme/{self.yesterday_time}.json') or AtomicDict()
+        self.yesterdays_data = self.load_json(
+            f'{SCRAPER_DIR}/data/sme/{self.yesterday_time}.json') or AtomicDict()
         self.url = self.config.get('URL', 'SME')
 
     @staticmethod
@@ -40,7 +41,7 @@ class SME(Scraper):
                 'url': article.find('a')['href'],
                 'time_published': SME.get_correct_date(article.find('small').get_text()),
                 'description': article.find('p').get_text().split('   ', 1)[0],
-                'photo': SME.get_correct_photo(article),  # refactor
+                'photo': SME.get_correct_photo(article),
                 'tags': '',
                 'author': '',
                 'content': ''

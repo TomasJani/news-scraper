@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from scraper import scraper_utils, DATE_TIME_FORMAT, root_logger as logging
+from scraper import scraper_utils, DATE_TIME_FORMAT, root_logger as logging, SCRAPER_DIR
 from scraper.abstract_scraper import Scraper
 from scraper.atomic_dict import AtomicDict
 
@@ -8,7 +8,8 @@ from scraper.atomic_dict import AtomicDict
 class ZemAVek(Scraper):
     def __init__(self):
         super().__init__()
-        self.yesterdays_data = self.load_json(f'scraper/data/zem_a_vek/{self.yesterday_time}.json') or AtomicDict()
+        self.yesterdays_data = self.load_json(
+            f'{SCRAPER_DIR}/data/zem_a_vek/{self.yesterday_time}.json') or AtomicDict()
         self.url = self.config.get('URL', 'ZemAVek')
 
     @staticmethod

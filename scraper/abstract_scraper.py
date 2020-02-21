@@ -6,7 +6,7 @@ import requests
 from abc import ABC
 from scraper import scraper_utils
 from scraper.atomic_dict import AtomicDict
-from scraper import today_time, config, yesterday_time, root_logger as logging
+from scraper import today_time, config, yesterday_time, root_logger as logging, SCRAPER_DIR
 from bs4 import BeautifulSoup
 
 
@@ -101,8 +101,8 @@ class Scraper(ABC):
             return ""
 
     @staticmethod
-    def save_data_json(data, site=""):  # Refactor
-        file = f'scraper/data/{site}/{today_time}.json'
+    def save_data_json(data, site=""):
+        file = f'{SCRAPER_DIR}/data/{site}/{today_time}.json'
         try:
             with codecs.open(file, 'w', 'utf-8') as f:
                 json.dump(data, sort_keys=True, indent=4, separators=(',', ': '), fp=f, ensure_ascii=False)
@@ -110,7 +110,7 @@ class Scraper(ABC):
             logging.error(f'save_data_json could not save data to {file}\n{e}')
 
     @staticmethod
-    def load_json(file):  # use more
+    def load_json(file):
         try:
             with codecs.open(file, 'r', 'windows-1250') as f:
                 read = f.read()

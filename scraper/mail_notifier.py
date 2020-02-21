@@ -3,7 +3,7 @@ import smtplib
 import ssl
 import logging
 
-from scraper import config, today_time
+from scraper import config, today_time, SCRAPER_DIR
 
 
 def get_log_content(path):
@@ -20,5 +20,5 @@ def send_logs():
     n_c = config['MailNotifier']
     with smtplib.SMTP_SSL(n_c['SMTPServer'], n_c['Port'], context=context) as server:
         server.login(n_c['Sender'], n_c['Password'])
-        message = 'Subject: {}\n\n{}'.format(f'Log {today_time}', get_log_content(f'scraper/logs/{today_time}.log'))
+        message = 'Subject: {}\n\n{}'.format(f'Log {today_time}', get_log_content(f'{SCRAPER_DIR}/logs/{today_time}.log'))
         server.sendmail(n_c['Sender'], n_c['Receiver'], message.encode("windows-1250"))

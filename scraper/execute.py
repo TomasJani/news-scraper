@@ -1,23 +1,24 @@
 import time
+from datetime import datetime
+
 import schedule
 
-from datetime import datetime
-from scraper import update_time, today_time, LOGGING_FORMAT
-from scraper.mail_notifier import send_logs
+from scraper import update_time
 from scraper.dennik_n import DennikN
 from scraper.hlavne_spravy import HlavneSpravy
+from scraper.mail_notifier import send_logs
 from scraper.plus_7_dni import Plus7Dni
 from scraper.sme import SME
 from scraper.zem_a_vek import ZemAVek
 
 
-def set_and_scrape():  # get sections from
+def set_and_scrape():  # get sections from config
     update_time()
     print(f'Started at: {datetime.now()}')
-    # DennikN.main()
-    # HlavneSpravy.main()
-    # Plus7Dni.main()
-    # SME.main()
+    DennikN.main()
+    HlavneSpravy.main()
+    Plus7Dni.main()
+    SME.main()
     ZemAVek.main()
     send_logs()
 
