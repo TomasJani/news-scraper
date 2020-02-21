@@ -1,7 +1,6 @@
-import logging
 from datetime import datetime
 
-from scraper import scraper_utils, LOGGING_FORMAT, DATE_TIME_FORMAT
+from scraper import scraper_utils, DATE_TIME_FORMAT, root_logger as logging
 from scraper.abstract_scraper import Scraper
 from scraper.atomic_dict import AtomicDict
 
@@ -80,4 +79,4 @@ class ZemAVek(Scraper):
         text = article_content.find(class_='entry-content')
         for script in text.find_all('script'):
             script.decompose()
-        return text.get_text().split('Zdroje:', 1)[0]  # conformation
+        return Scraper.get_part(text.get_text(), separator='Zdroje:', part=0)

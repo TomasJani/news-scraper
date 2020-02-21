@@ -2,12 +2,11 @@ import abc
 import codecs
 import json
 import requests
-import logging
 
 from abc import ABC
 from scraper import scraper_utils
 from scraper.atomic_dict import AtomicDict
-from scraper import today_time, config, yesterday_time
+from scraper import today_time, config, yesterday_time, root_logger as logging
 from bs4 import BeautifulSoup
 
 
@@ -15,6 +14,7 @@ class Scraper(ABC):
     def __init__(self):
         self.yesterdays_data = AtomicDict()
         self.data = AtomicDict()
+        self.url = None
         self.config = config
         self.yesterday_time = yesterday_time
 
@@ -93,7 +93,7 @@ class Scraper(ABC):
     @staticmethod
     def get_file_content(path):
         try:
-            with codecs.open(path, 'r', 'utf-8') as f:
+            with codecs.open(path, 'r', 'windows-1250') as f:
                 res = f.read()
                 return BeautifulSoup(res, 'html.parser').body
         except Exception as e:
@@ -101,17 +101,18 @@ class Scraper(ABC):
             return ""
 
     @staticmethod
-    def save_data_json(data, file=f'scraper/data/{today_time}.json', site=""):  # Refactor
+    def save_data_json(data, site=""):  # Refactor
+        file = f'scraper/data/{site}/{today_time}.json'
         try:
-            with codecs.open(f'scraper/data/{site}/{today_time}.json', 'w', 'utf-8') as f:
+            with codecs.open(file, 'w', 'utf-8') as f:
                 json.dump(data, sort_keys=True, indent=4, separators=(',', ': '), fp=f, ensure_ascii=False)
         except Exception as e:
             logging.error(f'save_data_json could not save data to {file}\n{e}')
 
     @staticmethod
-    def load_json(file):
+    def load_json(file):  # use more
         try:
-            with codecs.open(file, 'r', 'utf-8') as f:
+            with codecs.open(file, 'r', 'windows-1250') as f:
                 read = f.read()
                 return json.loads(read)
         except Exception as e:

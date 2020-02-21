@@ -8,7 +8,7 @@ from scraper import config, today_time
 
 def get_log_content(path):
     try:
-        with codecs.open(path, 'r', 'utf-8') as f:
+        with codecs.open(path, 'r', 'windows-1250') as f:
             return f.read()
     except Exception as e:
         logging.error(f'error with opening log file {path}\n{e}')

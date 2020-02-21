@@ -1,6 +1,4 @@
-import logging
-
-from scraper import scraper_utils, LOGGING_FORMAT, today_time, yesterday_time
+from scraper import scraper_utils, today_time, yesterday_time, root_logger as logging
 from scraper.abstract_scraper import Scraper
 from scraper.atomic_dict import AtomicDict
 

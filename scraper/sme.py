@@ -1,6 +1,4 @@
-import logging
-
-from scraper import scraper_utils, LOGGING_FORMAT
+from scraper import scraper_utils, root_logger as logging
 from scraper.abstract_scraper import Scraper
 from scraper.atomic_dict import AtomicDict
 
@@ -42,7 +40,7 @@ class SME(Scraper):
                 'url': article.find('a')['href'],
                 'time_published': SME.get_correct_date(article.find('small').get_text()),
                 'description': article.find('p').get_text().split('   ', 1)[0],
-                'photo': SME.get_correct_photo(article),
+                'photo': SME.get_correct_photo(article),  # refactor
                 'tags': '',
                 'author': '',
                 'content': ''
@@ -65,10 +63,10 @@ class SME(Scraper):
     def get_correct_photo(article):
         try:
             return article.find('img')['data-src']
-        except:  # make safe
+        except TypeError:
             try:
                 return article.find('img')['src']
-            except:
+            except TypeError:
                 logging.error('photo can not be found')
 
     @staticmethod
