@@ -1,8 +1,11 @@
 import logging
+import sqlite3
 
-from api import app, db
-from api.db_utils import load_yesterday_data, save_unsaved_db_data
-from api.models import Article
+from sqlalchemy import exc
+
+from scraper.api import app, db
+from scraper.api.db_utils import load_yesterday_data, save_unsaved_db_data
+from scraper.api.models import Article
 
 
 @app.route('/')
@@ -25,10 +28,10 @@ class AddToDb:  # new file
             try:
                 db.session.add(Article.from_dict_data(title, values))
                 db.session.commit()  # how often to commit?
-            except Exception as e:
+            except exc.IntegrityError:
                 unsaved_data[title] = values
                 db.session.rollback()
-                logging.error(f'title {title} can not be added to DB\n{e}')
+                logging.error(f'title {title} can not be added to DB')
         save_unsaved_db_data(unsaved_data)
 
     def add_words_analysis(self):

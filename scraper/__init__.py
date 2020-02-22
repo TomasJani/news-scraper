@@ -5,7 +5,6 @@ import os
 from datetime import datetime, timedelta
 from scraper.definitions import *
 
-
 config = configparser.ConfigParser()
 config.read(f'{ROOT_DIR}/config.ini')
 
@@ -21,10 +20,8 @@ root_logger.addHandler(handler)
 config = configparser.ConfigParser()
 config.read(f'{ROOT_DIR}/config.ini')
 
-directories = ['/data', '/logs', '/data/dennik_n', '/data/hlavne_spravy',
-               '/data/plus_7_dni', '/data/sme',
-               '/data/zem_a_vek']  # from config
-directories = list(map(lambda dirc: f'{SCRAPER_DIR}{dirc}', directories))
+directories = list(map(lambda dirc: f'{SCRAPER_DIR}{dirc}', ['/data', '/logs', '/data/dennik_n', '/data/hlavne_spravy',
+                                                             '/data/plus_7_dni', '/data/sme', '/data/zem_a_vek']))
 for directory in directories:
     if not os.path.exists(directory):
         os.makedirs(directory)

@@ -19,13 +19,10 @@ def slow_down(fn):
 def validate_dict(fn):
     def wrapper(*args, **kwargs):
         try:
-            res = fn(*args, **kwargs)
-        except Exception as e:  # Correct exceptions
+            return fn(*args, **kwargs)
+        except Exception as e:
             logging.error(f'validation problem\n{e}')
             return None
-        else:
-            return res
-
     return wrapper
 
 # Delete files after a while

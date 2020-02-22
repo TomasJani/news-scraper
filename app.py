@@ -1,4 +1,4 @@
-from api import app, routes
+from scraper.api import routes
 route = routes.AddToDb()
 route.add_yesterday_data()
 

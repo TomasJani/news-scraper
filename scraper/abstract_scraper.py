@@ -93,7 +93,7 @@ class Scraper(ABC):
     @staticmethod
     def get_file_content(path):
         try:
-            with codecs.open(path, 'r', 'windows-1250') as f:
+            with codecs.open(path, 'r', 'utf-8') as f:
                 res = f.read()
                 return BeautifulSoup(res, 'html.parser').body
         except Exception as e:
@@ -112,7 +112,7 @@ class Scraper(ABC):
     @staticmethod
     def load_json(file):
         try:
-            with codecs.open(file, 'r', 'windows-1250') as f:
+            with codecs.open(file, 'r', 'utf-8') as f:
                 read = f.read()
                 return json.loads(read)
         except Exception as e:

@@ -64,10 +64,10 @@ class SME(Scraper):
     def get_correct_photo(article):
         try:
             return article.find('img')['data-src']
-        except TypeError:
+        except (TypeError, KeyError):
             try:
                 return article.find('img')['src']
-            except TypeError:
+            except (TypeError, KeyError):
                 logging.error('photo can not be found')
 
     @staticmethod

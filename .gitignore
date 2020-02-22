@@ -8,6 +8,6 @@ scraper/data/
 scraper/logs/
 scraper/__pycache__/
 
-api/__pycache__
-api/testing.db
-api/logs/
+scraper/api/__pycache__
+scraper/api/testing.db
+scraper/api/logs/
