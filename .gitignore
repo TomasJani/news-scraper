@@ -10,4 +10,4 @@ scraper/__pycache__/
 
 scraper/api/__pycache__
 scraper/api/testing.db
-scraper/api/logs/
+scraper/api/data/

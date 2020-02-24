@@ -73,7 +73,7 @@ class ZemAVek(Scraper):
         if article_content.find(class_='tags') is not None:
             return article_content.find(class_='tags').get_text().split(' ', 2)[2]
         else:
-            ""
+            return ''
 
     @staticmethod
     def get_correct_content(article_content):
