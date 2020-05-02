@@ -26,7 +26,7 @@ class Plus7Dni(Scraper):
                 f"get_new_articles_by_page got None content with url {self.url_of_page(self.url, page, 'Plus7Dni')}")
             return AtomicDict()
 
-        current_content.find(class_='articles-quiz-popular').decompose()
+        current_content.find(class_='articles-quiz-popular').decompose()  # try/except
 
         for article in current_content.find_all(class_='article-tile'):
             scraped_article = self.scrape_article(article)

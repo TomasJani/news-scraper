@@ -1,13 +1,15 @@
 import abc
 import codecs
 import json
-import requests
-
 from abc import ABC
-from scraper import scraper_utils
-from scraper.atomic_dict import AtomicDict
+from typing import Optional
+
+import requests
+from bs4 import BeautifulSoup, Tag
+
+from scraper import scraper_utils, DataDict
 from scraper import today_time, config, yesterday_time, root_logger as logging, SCRAPER_DIR
-from bs4 import BeautifulSoup
+from scraper.atomic_dict import AtomicDict
 
 
 class Scraper(ABC):
@@ -18,7 +20,7 @@ class Scraper(ABC):
         self.config = config
         self.yesterday_time = yesterday_time
 
-    def get_new_articles(self):
+    def get_new_articles(self) -> None:
         page = 1
         still_new = True
         max_page = int(self.config.get('Settings', 'MaxPages'))
@@ -32,7 +34,7 @@ class Scraper(ABC):
         self.get_from_article()
 
     @scraper_utils.slow_down
-    def get_from_article(self):
+    def get_from_article(self) -> None:
         for title, article_info in self.data.items():
             article_content = self.get_content(article_info['url'])
             if article_content is None:
@@ -47,15 +49,15 @@ class Scraper(ABC):
                 logging.info(f'((title was successfully added but can not be encoded))\n{e}')
 
     @abc.abstractmethod
-    def get_new_articles_by_page(self, page):
+    def get_new_articles_by_page(self, page: int) -> AtomicDict:
         """Method Doc"""
 
     @abc.abstractmethod
-    def scrape_content(self, title, article_content):
+    def scrape_content(self, title: str, article_content: Tag) -> DataDict:
         """Method Doc"""
 
     @staticmethod
-    def url_of_page(url, page, site):
+    def url_of_page(url: str, page: str, site: str) -> str:
         if site == 'ZemAVek' or site == 'HlavneSpravy' or site == "DennikN":
             return f'{url}page/{page}'
         elif site == 'Plus7Dni':
@@ -66,32 +68,31 @@ class Scraper(ABC):
             raise NotImplemented
 
     @staticmethod
-    def may_be_empty(fn, replacement=''):
-        if fn is None:
+    def may_be_empty(dom_part: Optional[Tag], replacement='') -> str:
+        if dom_part is None:
             return replacement
         else:
-            return fn.get_text()
+            return dom_part.get_text()
 
     @staticmethod
-    def get_part(text, separator='', part=0):
+    def get_part(text: str, separator='', part=0) -> str:
         return text.split(separator, 1)[part].strip()
 
     @staticmethod
     @scraper_utils.slow_down
-    def get_content(url):
+    def get_content(url: str) -> Optional[Tag]:
         try:
             res = requests.get(url)
-            soup = BeautifulSoup(res.text, 'html.parser')
+            return BeautifulSoup(res.text, 'html.parser')
         except requests.exceptions.RequestException as e:
             logging.error(f'Problem with request.get called on url {url}\n{e}')
             return None
         except Exception as e:  # HtmlParser
             logging.error(f'Problem with beautiful soap parsing html at url {url}\n{e}')
-        else:
-            return soup.body
+            return None
 
     @staticmethod
-    def get_file_content(path):
+    def get_file_website_content(path: str) -> object:
         try:
             with codecs.open(path, 'r', 'utf-8') as f:
                 res = f.read()
@@ -101,7 +102,7 @@ class Scraper(ABC):
             return ""
 
     @staticmethod
-    def save_data_json(data, site=""):
+    def save_data_json(data: DataDict, site="") -> None:
         file = f'{SCRAPER_DIR}/data/{site}/{today_time}.json'
         try:
             with codecs.open(file, 'w', 'utf-8') as f:
@@ -110,11 +111,11 @@ class Scraper(ABC):
             logging.error(f'save_data_json could not save data to {file}\n{e}')
 
     @staticmethod
-    def load_json(file):
+    def load_json(path: str) -> dict:
         try:
-            with codecs.open(file, 'r', 'utf-8') as f:
+            with codecs.open(path, 'r', 'utf-8') as f:
                 read = f.read()
                 return json.loads(read)
         except Exception as e:
-            logging.error(f'load_json cannot harvest data from date {file}\n{e}')
+            logging.error(f'load_json cannot harvest data from date {path}\n{e}')
             return {}
