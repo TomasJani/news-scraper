@@ -14,11 +14,11 @@ from scraper.zem_a_vek import ZemAVek
 def set_and_scrape():  # get sections from config
     update_time()
     print(f'Started at: {today_time}')
-    # DennikN.main()
-    # HlavneSpravy.main()
-    # Plus7Dni.main()
+    DennikN.main()
+    HlavneSpravy.main()
+    Plus7Dni.main()
     SME.main()
-    ZemAVek.main()
+    # ZemAVek.main()
     send_logs()
 
 
