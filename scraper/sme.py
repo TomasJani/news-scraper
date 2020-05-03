@@ -82,7 +82,7 @@ class SME(Scraper):
 
     @staticmethod
     def get_correct_date(time_str):
-        months = ['', 'jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec']
+        months = ['', 'jan', 'feb', 'mar', 'apr', 'máj', 'jún', 'júl', 'aug', 'sep', 'okt', 'nov', 'dec']
         time_str = time_str.translate({ord(i): None for i in '.,'})
         day, month, year, _, time, _ = time_str.split(' ')
         month_str = '{:02d}'.format(months.index(month))

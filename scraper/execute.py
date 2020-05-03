@@ -14,9 +14,9 @@ from scraper.zem_a_vek import ZemAVek
 def set_and_scrape():  # get sections from config
     update_time()
     print(f'Started at: {today_time}')
-    DennikN.main()
-    HlavneSpravy.main()
-    Plus7Dni.main()
+    # DennikN.main()
+    # HlavneSpravy.main()
+    # Plus7Dni.main()
     SME.main()
     ZemAVek.main()
     send_logs()
@@ -28,4 +28,4 @@ schedule.every().day.at('05:00').do(set_and_scrape)
 def start():
     while True:
         schedule.run_pending()
-        time.sleep(1)
+        time.sleep(10)
