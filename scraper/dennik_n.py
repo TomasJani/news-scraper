@@ -3,7 +3,6 @@ from typing import Dict
 
 from scraper import scraper_utils, DATE_TIME_FORMAT, root_logger as logging, SCRAPER_DIR, DataDict
 from scraper.abstract_scraper import Scraper
-from scraper.api.models import Tag
 from scraper.atomic_dict import AtomicDict
 
 
@@ -37,7 +36,7 @@ class DennikN(Scraper):
 
     @staticmethod
     @scraper_utils.validate_dict
-    def scrape_article(article: Tag) -> DataDict:
+    def scrape_article(article) -> DataDict:
         return DataDict({
             'title': article.span.text,
             'values': {
@@ -54,7 +53,7 @@ class DennikN(Scraper):
         })
 
     @scraper_utils.validate_dict
-    def scrape_content(self, title: str, article_content: Tag) -> Dict[str, dict]:
+    def scrape_content(self, title: str, article_content) -> Dict[str, dict]:
         return {
             'title': title,
             'values': {
@@ -64,14 +63,14 @@ class DennikN(Scraper):
         }
 
     @staticmethod
-    def get_photo(article: Tag) -> str:
+    def get_photo(article) -> str:
         if article.find('img') is not None:
             return article.find('img')['data-src']
         else:
             return ""
 
     @staticmethod
-    def get_correct_content(article_content: Tag) -> str:
+    def get_correct_content(article_content) -> str:
         if article_content.find(class_='a_single__post') is not None:
             return article_content.find(class_='a_single__post').get_text()
         elif article_content.find(class_='b_single_main') is not None:
@@ -81,7 +80,7 @@ class DennikN(Scraper):
             return ""
 
     @staticmethod
-    def get_correct_tags(article_content: Tag) -> str:
+    def get_correct_tags(article_content) -> str:
         find_tag = article_content.find(class_='e_terms')
         if find_tag is not None:
             find_tag.find('time').decompose()
