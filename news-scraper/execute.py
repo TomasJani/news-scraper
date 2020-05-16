@@ -10,7 +10,7 @@ from news_scraper.plus_7_dni import Plus7Dni
 from news_scraper.sme import SME
 
 
-def set_and_scrape() -> None:  # get sections from config
+def set_and_scrape() -> None:
     ProjectVariables.update_time()
     print(f'Started at: {ProjectVariables.today_time}')
     DennikN.main()
