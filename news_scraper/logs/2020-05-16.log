@@ -1,0 +1,2 @@
+2020-05-16 20:32:42,838 :: ERROR = load_json cannot harvest data from date /home/tomas/news_scraper/news_scraper/data/dennik_n/2020-05-15.json
+[Errno 2] No such file or directory: '/home/tomas/news_scraper/news_scraper/data/dennik_n/2020-05-15.json'
