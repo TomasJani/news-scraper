@@ -2,7 +2,7 @@ from typing import Dict
 
 from bs4 import Tag
 
-from news_scraper import scraper_utils, today_time, yesterday_time, root_logger as logging, SCRAPER_DIR
+from news_scraper import scraper_utils, SCRAPER_DIR, ProjectVariables
 from news_scraper.abstract_scraper import Scraper
 from news_scraper.atomic_dict import AtomicDict
 
@@ -26,7 +26,7 @@ class Plus7Dni(Scraper):
         new_data = AtomicDict()
         current_content = self.get_content(self.url_of_page(self.url, page, 'Plus7Dni'))
         if current_content is None:
-            logging.error(
+            self.logging.error(
                 f"get_new_articles_by_page got None content with url {self.url_of_page(self.url, page, 'Plus7Dni')}")
             return AtomicDict()
 
@@ -68,13 +68,12 @@ class Plus7Dni(Scraper):
             }
         }
 
-    @staticmethod
-    def parse_time(time_tag: Tag) -> str:
+    def parse_time(self, time_tag: Tag) -> str:
         hours, minutes = time_tag.find(class_='datetime-time').get_text().split(':', 1)
         if time_tag.find(class_='datetime-today'):
-            return f'{today_time} {hours.zfill(2)}:{minutes}'
+            return f'{ProjectVariables.today_time} {hours.zfill(2)}:{minutes}'
         elif time_tag.find(class_='datetime-yesterday'):
-            return f'{yesterday_time} {hours.zfill(2)}:{minutes}'
+            return f'{self.yesterday_time} {hours.zfill(2)}:{minutes}'
         else:
             year = time_tag.find(class_='datetime-year').get_text()
             day, month, _ = time_tag.find(class_='datetime-day-month').get_text().split('.', 2)

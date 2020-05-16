@@ -3,7 +3,7 @@ from typing import Dict
 
 from bs4 import Tag
 
-from news_scraper import scraper_utils, DATE_TIME_FORMAT, root_logger as logging, SCRAPER_DIR
+from news_scraper import scraper_utils, DATE_TIME_FORMAT, SCRAPER_DIR
 from news_scraper.abstract_scraper import Scraper
 from news_scraper.atomic_dict import AtomicDict
 
@@ -27,7 +27,7 @@ class ZemAVek(Scraper):
         new_data = AtomicDict()
         current_content = self.get_content(self.url_of_page(self.url, page, 'ZemAVek'))
         if current_content is None:
-            logging.error(
+            self.logging.error(
                 f"get_new_articles_by_page got None content with url {self.url_of_page(self.url, page, 'ZemAVek')}")
             return AtomicDict()
         for article in current_content.find_all('article'):
@@ -72,7 +72,7 @@ class ZemAVek(Scraper):
         }
 
     @staticmethod
-    def get_correct_tags(article_content: Tag) -> Dict[str, dict]:
+    def get_correct_tags(article_content: Tag) -> str:
         if article_content.find(class_='tags') is not None:
             return article_content.find(class_='tags').get_text().split(' ', 2)[2]
         else:

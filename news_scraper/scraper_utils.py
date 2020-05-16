@@ -1,8 +1,9 @@
 import time
-import logging
 
 from random import randint
-from news_scraper import config
+from news_scraper import config, ProjectVariables
+
+logging = ProjectVariables.root_logger
 
 
 def slow_down(fn):
@@ -23,4 +24,5 @@ def validate_dict(fn):
         except Exception as e:
             logging.error(f'validation problem\n{e}')
             return None
+
     return wrapper

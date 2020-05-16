@@ -2,7 +2,7 @@ from typing import Dict
 
 from bs4 import Tag
 
-from news_scraper import scraper_utils, root_logger as logging, SCRAPER_DIR
+from news_scraper import scraper_utils, SCRAPER_DIR
 from news_scraper.abstract_scraper import Scraper
 from news_scraper.atomic_dict import AtomicDict
 
@@ -26,7 +26,7 @@ class SME(Scraper):
         new_data = AtomicDict()
         current_content = self.get_content(self.url_of_page(self.url, page, 'SME'))
         if current_content is None:
-            logging.error(
+            self.logging.error(
                 f"get_new_articles_by_page got None content with url {self.url_of_page(self.url, page, 'SME')}")
             return AtomicDict()
         for article in current_content.find_all(class_='js-article'):
@@ -64,15 +64,14 @@ class SME(Scraper):
             }
         }
 
-    @staticmethod
-    def get_correct_photo(article: Tag) -> str:
+    def get_correct_photo(self, article: Tag) -> str:
         try:
             return article.find('img')['data-src']
         except (TypeError, KeyError):
             try:
                 return article.find('img')['src']
             except (TypeError, KeyError):
-                logging.error('photo can not be found')
+                self.logging.error('photo can not be found')
 
     @staticmethod
     def get_correct_content(article_content: Tag) -> str:
