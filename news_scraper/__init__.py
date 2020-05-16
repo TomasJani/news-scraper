@@ -2,7 +2,7 @@ import configparser
 import os
 
 from news_scraper.definitions import *
-from news_scraper.ProjectVariables import ProjectVariables
+from news_scraper.project_variables import ProjectVariables
 
 config = configparser.ConfigParser()
 config.read(f'{ROOT_DIR}/config.ini')

@@ -2,12 +2,9 @@ config.ini
 __pycache__/
 .idea/
 websites/
+venv/
 
-scraper/aktuality.py
-scraper/data/
-scraper/logs/
-scraper/__pycache__/
-
-scraper/api/__pycache__
-scraper/api/testing.db
-scraper/api/data/
+news_scraper/aktuality.py
+news_scraper/data/
+news_scraper/logs/
+news_scraper/__pycache__/
