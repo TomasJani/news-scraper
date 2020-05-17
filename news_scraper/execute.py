@@ -11,12 +11,13 @@ from news_scraper.sme import SME
 
 
 def set_and_scrape() -> None:
+    ProjectVariables.set_logger()
     ProjectVariables.update_time()
     print(f'Started at: {ProjectVariables.today_time}')
-    DennikN.main()
-    HlavneSpravy.main()
+    # DennikN.main()
+    # HlavneSpravy.main()
     Plus7Dni.main()
-    SME.main()
+    # SME.main()
     send_logs()
 
 

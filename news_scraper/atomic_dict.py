@@ -1,8 +1,9 @@
-import logging
 from typing import Dict
 
-from news_scraper import config
+from news_scraper import config, ProjectVariables
 from functools import wraps
+
+logging = ProjectVariables.root_logger
 
 
 def accepts_dict(fn):

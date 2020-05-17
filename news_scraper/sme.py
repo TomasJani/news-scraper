@@ -43,9 +43,9 @@ class SME(Scraper):
                 'site': 'sme',
                 'category': 'domov',
                 'url': article.find('a')['href'],
-                'time_published': SME.get_correct_date(article.find('small').get_text()),
+                'time_published': self.get_correct_date(article.find('small').get_text()),
                 'description': article.find('p').get_text().split('   ', 1)[0],
-                'photo': SME.get_correct_photo(article),
+                'photo': self.get_correct_photo(article),
                 'tags': '',
                 'author': '',
                 'content': ''

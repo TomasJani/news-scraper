@@ -55,12 +55,12 @@ class DennikN(Scraper):
         }
 
     @scraper_utils.validate_dict
-    def scrape_content(self, title: str, article_content) -> Dict[str, dict]:
+    def scrape_content(self, title: str, article_content: Tag) -> Dict[str, dict]:
         return {
             'title': title,
             'values': {
                 'tags': self.get_correct_tags(article_content),
-                'content': DennikN.get_correct_content(article_content)
+                'content': self.get_correct_content(article_content)
             }
         }
 

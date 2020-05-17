@@ -38,16 +38,15 @@ class Plus7Dni(Scraper):
 
         return new_data
 
-    @staticmethod
     @scraper_utils.validate_dict
-    def scrape_article(article: Tag) -> Dict[str, dict]:
+    def scrape_article(self, article: Tag) -> Dict[str, dict]:
         return {
             'title': article.find(class_='article-tile__text').find('h2').get_text(),
             'values': {
                 'site': 'plus_7_dni',
                 'category': 'domov',
                 'url': article.find(class_='heading')['href'],
-                'time_published': Plus7Dni.parse_time(
+                'time_published': self.parse_time(
                     article.find(class_='meta__item meta__item--datetime datetime-default')),
                 'description': article.find(class_='perex').get_text().strip(),
                 'photo': article.find('img')['data-src'],

@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup, Tag
 from news_scraper import scraper_utils, config, SCRAPER_DIR, ProjectVariables
 from news_scraper.atomic_dict import AtomicDict
 
+
 class Scraper(ABC):
     def __init__(self):
         self.yesterdays_data: AtomicDict = AtomicDict()
