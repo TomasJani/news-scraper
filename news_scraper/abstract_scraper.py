@@ -99,8 +99,8 @@ class Scraper(ABC):
             self.logging.error(f'error with opening file {path}\n{e}')
             return ""
 
-    def save_data_json(self, data: Dict[str, dict], site="") -> None:
-        file = f'{SCRAPER_DIR}/data/{site}/{ProjectVariables.today_time}'
+    def save_data_json(self, data: list, site="") -> None:
+        file = f'{SCRAPER_DIR}/data/{site}/{ProjectVariables.today_time}.json'
         try:
             with codecs.open(file, 'w', 'utf-8') as f:
                 json.dump(data, sort_keys=True, indent=4, separators=(',', ': '), fp=f, ensure_ascii=False)
