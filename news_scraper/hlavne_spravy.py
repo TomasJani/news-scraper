@@ -7,13 +7,14 @@ from bs4 import Tag
 from news_scraper import scraper_utils, DATE_TIME_FORMAT, SCRAPER_DIR
 from news_scraper.abstract_scraper import Scraper
 from news_scraper.atomic_dict import AtomicDict
+from news_scraper.scraper_utils import dict_to_list, list_to_dict
 
 
 class HlavneSpravy(Scraper):
     def __init__(self):
         super().__init__()
-        self.yesterdays_data: AtomicDict = self.load_json(
-            f'{SCRAPER_DIR}/data/hlavne_spravy/{self.yesterday_time}.json') or AtomicDict()
+        self.yesterdays_data: AtomicDict = list_to_dict(self.load_json(
+            f'{SCRAPER_DIR}/data/hlavne_spravy/{self.yesterday_time}.json')) or AtomicDict()
         self.url: str = self.config.get('URL', 'HlavneSpravy')
 
     @staticmethod
@@ -21,7 +22,7 @@ class HlavneSpravy(Scraper):
         hs = HlavneSpravy()
         hs.get_new_articles()
         print(len(hs.data))
-        hs.save_data_json(hs.data, site='hlavne_spravy')
+        hs.save_data_json(dict_to_list(hs.data), site='hlavne_spravy')
 
     @scraper_utils.slow_down
     def get_new_articles_by_page(self, page: str) -> AtomicDict:

@@ -6,13 +6,14 @@ from bs4 import Tag
 from news_scraper import scraper_utils, DATE_TIME_FORMAT, SCRAPER_DIR
 from news_scraper.abstract_scraper import Scraper
 from news_scraper.atomic_dict import AtomicDict
+from news_scraper.scraper_utils import list_to_dict, dict_to_list
 
 
 class ZemAVek(Scraper):
     def __init__(self):
         super().__init__()
-        self.yesterdays_data: AtomicDict = self.load_json(
-            f'{SCRAPER_DIR}/data/zem_a_vek/{self.yesterday_time}.json') or AtomicDict()
+        self.yesterdays_data: AtomicDict = list_to_dict(self.load_json(
+            f'{SCRAPER_DIR}/data/zem_a_vek/{self.yesterday_time}.json')) or AtomicDict()
         self.url: str = self.config.get('URL', 'ZemAVek')
 
     @staticmethod
@@ -20,7 +21,7 @@ class ZemAVek(Scraper):
         zav = ZemAVek()
         zav.get_new_articles()
         print(len(zav.data))
-        zav.save_data_json(zav.data, site='zem_a_vek')
+        zav.save_data_json(dict_to_list(zav.data), site='zem_a_vek')
 
     @scraper_utils.slow_down
     def get_new_articles_by_page(self, page: str) -> AtomicDict:

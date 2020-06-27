@@ -5,13 +5,14 @@ from bs4 import Tag
 from news_scraper import scraper_utils, SCRAPER_DIR, ProjectVariables
 from news_scraper.abstract_scraper import Scraper
 from news_scraper.atomic_dict import AtomicDict
+from news_scraper.scraper_utils import list_to_dict, dict_to_list
 
 
 class Plus7Dni(Scraper):
     def __init__(self):
         super().__init__()
-        self.yesterdays_data: AtomicDict = self.load_json(
-            f'{SCRAPER_DIR}/data/plus_7_dni/{self.yesterday_time}.json') or AtomicDict()
+        self.yesterdays_data: AtomicDict = list_to_dict(self.load_json(
+            f'{SCRAPER_DIR}/data/plus_7_dni/{self.yesterday_time}.json')) or AtomicDict()
         self.url: str = self.config.get('URL', 'Plus7Dni')
 
     @staticmethod
@@ -19,7 +20,7 @@ class Plus7Dni(Scraper):
         p7d = Plus7Dni()
         p7d.get_new_articles()
         print(len(p7d.data))
-        p7d.save_data_json(p7d.data, site='plus_7_dni')
+        p7d.save_data_json(dict_to_list(p7d.data), site='plus_7_dni')
 
     @scraper_utils.slow_down
     def get_new_articles_by_page(self, page: str) -> AtomicDict:

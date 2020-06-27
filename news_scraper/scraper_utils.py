@@ -2,6 +2,7 @@ import time
 
 from random import randint
 from news_scraper import config, ProjectVariables
+from news_scraper.atomic_dict import AtomicDict
 
 logging = ProjectVariables.root_logger
 
@@ -26,3 +27,22 @@ def validate_dict(fn):
             return None
 
     return wrapper
+
+
+def dict_to_list(data: AtomicDict) -> list:
+    list_data = []
+    for title, article in data.items():
+        article['title'] = title
+        list_data.append(article)
+
+    return list_data
+
+
+def list_to_dict(data: list) -> AtomicDict:
+    dict_data = AtomicDict()
+    for article in data:
+        title = article["title"]
+        del article["title"]
+        dict_data[title] = article
+
+    return dict_data

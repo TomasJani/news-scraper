@@ -107,11 +107,11 @@ class Scraper(ABC):
         except Exception as e:
             self.logging.error(f'save_data_json could not save data to {file}\n{e}')
 
-    def load_json(self, path: str) -> dict:
+    def load_json(self, path: str) -> list:
         try:
             with codecs.open(path, 'r', 'utf-8') as f:
                 read = f.read()
                 return json.loads(read)
         except Exception as e:
             self.logging.error(f'load_json cannot harvest data from date {path}\n{e}')
-            return {}
+            return []

@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Union
 
 from news_scraper import config, ProjectVariables
 from functools import wraps
@@ -19,7 +19,7 @@ def accepts_dict(fn):
 
 class AtomicDict(dict):
     @accepts_dict
-    def add(self, obj: dict, yesterday_data=None) -> bool:
+    def add(self, obj: Dict[str, Union[str, dict]], yesterday_data=None) -> bool:
         if yesterday_data is None:
             yesterday_data = AtomicDict()
         title = obj['title']
@@ -30,7 +30,7 @@ class AtomicDict(dict):
         return False
 
     @accepts_dict
-    def add_all(self, objs: Dict[str, dict], yesterday_data=None) -> bool:
+    def add_all(self, objs: Dict[str, Union[str, dict]], yesterday_data=None) -> bool:
         if yesterday_data is None:
             yesterday_data = AtomicDict()
         max_collisions = int(config.get('Settings', 'MaxCollisions'))
@@ -46,7 +46,7 @@ class AtomicDict(dict):
         return True
 
     @accepts_dict
-    def add_additional_data(self, additional_data: dict) -> None:
+    def add_additional_data(self, additional_data: Dict[str, Union[str, dict]]) -> None:
         title = additional_data['title']
         new_values = additional_data['values']
         if self[title] is None:
