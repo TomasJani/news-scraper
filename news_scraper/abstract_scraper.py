@@ -8,13 +8,13 @@ import requests
 from bs4 import BeautifulSoup, Tag
 
 from news_scraper import scraper_utils, config, SCRAPER_DIR, ProjectVariables
-from news_scraper.atomic_list import AtomicList
+from news_scraper.atomic_dict import AtomicDict
 
 
 class Scraper(ABC):
     def __init__(self):
-        self.yesterdays_data: AtomicList = AtomicList()
-        self.data: AtomicList = AtomicList()
+        self.yesterdays_data: AtomicDict = AtomicDict()
+        self.data: AtomicDict = AtomicDict()
         self.url: Optional[str] = None
         self.config: dict = config
         self.yesterday_time: str = ProjectVariables.yesterday_time
@@ -35,21 +35,21 @@ class Scraper(ABC):
 
     @scraper_utils.slow_down
     def get_from_article(self) -> None:
-        for article in self.data:
-            article_content = self.get_content(article['url'])
+        for title, article_info in self.data.items():
+            article_content = self.get_content(article_info['url'])
             if article_content is None:
                 self.logging.error(
-                    f"get_from_article got None content with url {article['url']}")
+                    f"get_from_article got None content with url {article_info['url']}")
                 continue
-            additional_data = self.scrape_content(article["title"], article_content)
+            additional_data = self.scrape_content(title, article_content)
             self.data.add_additional_data(additional_data)
             try:
-                self.logging.info(f'[[{article["site"]}]] (({article["title"]})) added to file DB')
+                self.logging.info(f'[[{article_info["site"]}]] (({title})) added to file DB')
             except UnicodeEncodeError as e:
                 self.logging.info(f'((title was successfully added but can not be encoded))\n{e}')
 
     @abc.abstractmethod
-    def get_new_articles_by_page(self, page: int) -> AtomicList:
+    def get_new_articles_by_page(self, page: int) -> AtomicDict:
         """Method Doc"""
 
     @abc.abstractmethod
@@ -65,7 +65,7 @@ class Scraper(ABC):
         elif site == 'SME':
             return f'{url}page={page}'
         else:
-            raise NotImplemented()
+            raise NotImplemented
 
     @staticmethod
     def may_be_empty(dom_part: Optional[Tag], replacement='') -> str:
@@ -99,7 +99,7 @@ class Scraper(ABC):
             self.logging.error(f'error with opening file {path}\n{e}')
             return ""
 
-    def save_data_json(self, data: AtomicList, site="") -> None:
+    def save_data_json(self, data: list, site="") -> None:
         file = f'{SCRAPER_DIR}/data/{site}/{ProjectVariables.today_time}.json'
         try:
             with codecs.open(file, 'w', 'utf-8') as f:
