@@ -4,7 +4,9 @@ from typing import Dict
 from bs4 import Tag
 
 from news_scraper import scraper_utils, DATE_TIME_FORMAT, SCRAPER_DIR
-from news_scraper.abstract_scraper import Scraper
+from news_scraper.enums.categories import Category
+from news_scraper.enums.site import Site
+from news_scraper.scrapers.abstract_scraper import Scraper
 from news_scraper.atomic_dict import AtomicDict
 from news_scraper.scraper_utils import list_to_dict, dict_to_list
 
@@ -13,38 +15,38 @@ class ZemAVek(Scraper):
     def __init__(self):
         super().__init__()
         self.yesterdays_data: AtomicDict = list_to_dict(self.load_json(
-            f'{SCRAPER_DIR}/data/zem_a_vek/{self.yesterday_time}.json')) or AtomicDict()
-        self.url: str = self.config.get('URL', 'ZemAVek')
+            f'{SCRAPER_DIR}/data/{self.yesterday_time}.json')) or AtomicDict()
+        self.site: Site = Site.ZemAVek
+        self.url: str = self.config.get('URL', self.site.value)
 
     @staticmethod
-    def main() -> None:
+    def main() -> list:
         zav = ZemAVek()
         zav.get_new_articles()
         print(len(zav.data))
-        zav.save_data_json(dict_to_list(zav.data), site='zem_a_vek')
+        return dict_to_list(zav.data)
 
     @scraper_utils.slow_down
     def get_new_articles_by_page(self, page: str) -> AtomicDict:
         new_data = AtomicDict()
-        current_content = self.get_content(self.url_of_page(self.url, page, 'ZemAVek'))
+        current_content = self.get_content(self.url_of_page(self.url, page, self.site))
         if current_content is None:
             self.logging.error(
-                f"get_new_articles_by_page got None content with url {self.url_of_page(self.url, page, 'ZemAVek')}")
+                f"get_new_articles_by_page got None content with url {self.url_of_page(self.url, page, self.site)}")
             return AtomicDict()
         for article in current_content.find_all('article'):
             scraped_article = self.scrape_article(article)
-            new_data.add(scraped_article)
+            new_data.add(scraped_article, self.site)
 
         return new_data
 
-    @staticmethod
     @scraper_utils.validate_dict
-    def scrape_article(article: Tag) -> Dict[str, dict]:
+    def scrape_article(self, article: Tag) -> Dict[str, dict]:
         return {
             'title': article.h3.a.text,
             'values': {
-                'site': 'zem_a_vek',
-                'category': 'domov',
+                'site': self.site.value,
+                'category': Category.HomeNews.value,
                 'url': article.find('a')['href'],
                 'time_published': ZemAVek.time_formater(article),
                 'description': article.find('p').get_text(),

@@ -3,6 +3,8 @@ from typing import Dict, Union
 from news_scraper import config, ProjectVariables
 from functools import wraps
 
+from news_scraper.enums.site import Site
+
 logging = ProjectVariables.root_logger
 
 
@@ -19,18 +21,19 @@ def accepts_dict(fn):
 
 class AtomicDict(dict):
     @accepts_dict
-    def add(self, obj: Dict[str, Union[str, dict]], yesterday_data=None) -> bool:
+    def add(self, obj: Dict[str, Union[str, dict]], site: Site, yesterday_data=None) -> bool:
         if yesterday_data is None:
             yesterday_data = AtomicDict()
         title = obj['title']
         values = obj['values']
-        if title in self.keys() or title in yesterday_data.keys():
+        yesterday_article = yesterday_data.get(title, None)
+        if title in self.keys() or (yesterday_article and site.value == yesterday_article["site"]):
             return True
         self[title] = values
         return False
 
     @accepts_dict
-    def add_all(self, objs: Dict[str, Union[str, dict]], yesterday_data=None) -> bool:
+    def add_all(self, objs: Dict[str, Union[str, dict]], site: Site, yesterday_data=None) -> bool:
         if yesterday_data is None:
             yesterday_data = AtomicDict()
         max_collisions = int(config.get('Settings', 'MaxCollisions'))
@@ -38,7 +41,7 @@ class AtomicDict(dict):
             res = self.add({
                 'title': title,
                 'values': values
-            }, yesterday_data=yesterday_data)
+            }, site, yesterday_data=yesterday_data)
             if res:
                 max_collisions -= 1
             if max_collisions == 0:

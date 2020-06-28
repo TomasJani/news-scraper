@@ -3,7 +3,9 @@ from typing import Dict
 from bs4 import Tag
 
 from news_scraper import scraper_utils, SCRAPER_DIR
-from news_scraper.abstract_scraper import Scraper
+from news_scraper.enums.categories import Category
+from news_scraper.enums.site import Site
+from news_scraper.scrapers.abstract_scraper import Scraper
 from news_scraper.atomic_dict import AtomicDict
 from news_scraper.scraper_utils import list_to_dict, dict_to_list
 
@@ -12,27 +14,28 @@ class SME(Scraper):
     def __init__(self):
         super().__init__()
         self.yesterdays_data: AtomicDict = list_to_dict(self.load_json(
-            f'{SCRAPER_DIR}/data/sme/{self.yesterday_time}.json')) or AtomicDict()
-        self.url: str = self.config.get('URL', 'SME')
+            f'{SCRAPER_DIR}/data/{self.yesterday_time}.json')) or AtomicDict()
+        self.site: Site = Site.SME
+        self.url: str = self.config.get('URL', self.site.value)
 
     @staticmethod
-    def main() -> None:
+    def main() -> list:
         sme = SME()
         sme.get_new_articles()
         print(len(sme.data))
-        sme.save_data_json(dict_to_list(sme.data), site='sme')
+        return dict_to_list(sme.data)
 
     @scraper_utils.slow_down
     def get_new_articles_by_page(self, page: str) -> AtomicDict:
         new_data = AtomicDict()
-        current_content = self.get_content(self.url_of_page(self.url, page, 'SME'))
+        current_content = self.get_content(self.url_of_page(self.url, page, self.site))
         if current_content is None:
             self.logging.error(
-                f"get_new_articles_by_page got None content with url {self.url_of_page(self.url, page, 'SME')}")
+                f"get_new_articles_by_page got None content with url {self.url_of_page(self.url, page, self.site)}")
             return AtomicDict()
         for article in current_content.find_all(class_='js-article'):
             scraped_article = self.scrape_article(article)
-            new_data.add(scraped_article)
+            new_data.add(scraped_article, self.site)
 
         return new_data
 
@@ -41,8 +44,8 @@ class SME(Scraper):
         return {
             'title': article.h2.a.text,
             'values': {
-                'site': 'sme',
-                'category': 'domov',
+                'site': self.site.value,
+                'category': Category.HomeNews.value,
                 'url': article.find('a')['href'],
                 'time_published': self.get_correct_date(article.find('small').get_text()),
                 'description': article.find('p').get_text().split('   ', 1)[0],
@@ -60,7 +63,7 @@ class SME(Scraper):
             'title': title,
             'values': {
                 'author': Scraper.may_be_empty(article_content.find(class_='article-published-author'),
-                                               replacement="SME"),
+                                               replacement=""),
                 'content': SME.get_correct_content(article_content)
             }
         }

@@ -7,8 +7,9 @@ from typing import Optional, Dict
 import requests
 from bs4 import BeautifulSoup, Tag
 
-from news_scraper import scraper_utils, config, SCRAPER_DIR, ProjectVariables
+from news_scraper import scraper_utils, config, ProjectVariables
 from news_scraper.atomic_dict import AtomicDict
+from news_scraper.enums.site import Site
 
 
 class Scraper(ABC):
@@ -16,6 +17,7 @@ class Scraper(ABC):
         self.yesterdays_data: AtomicDict = AtomicDict()
         self.data: AtomicDict = AtomicDict()
         self.url: Optional[str] = None
+        self.site: Site = Site.DennikN
         self.config: dict = config
         self.yesterday_time: str = ProjectVariables.yesterday_time
         self.logging = ProjectVariables.root_logger
@@ -28,7 +30,7 @@ class Scraper(ABC):
             new_data = self.get_new_articles_by_page(page)
             if len(new_data) == 0:
                 self.logging.error(f'get_new_articles is not getting new data from {self.url} at {page} page')
-            still_new = self.data.add_all(new_data, self.yesterdays_data)
+            still_new = self.data.add_all(new_data, self.site, self.yesterdays_data)
             page += 1
 
         self.get_from_article()
@@ -57,12 +59,12 @@ class Scraper(ABC):
         """Method Doc"""
 
     @staticmethod
-    def url_of_page(url: str, page: str, site: str) -> str:
-        if site == 'ZemAVek' or site == 'HlavneSpravy' or site == "DennikN":
+    def url_of_page(url: str, page: str, site: Site) -> str:
+        if site == Site.ZemAVek or site == Site.HlavneSpravy or site == Site.DennikN:
             return f'{url}page/{page}'
-        elif site == 'Plus7Dni':
+        elif site == Site.Plus7Dni:
             return url + str(page)
-        elif site == 'SME':
+        elif site == Site.SME:
             return f'{url}page={page}'
         else:
             raise NotImplemented
@@ -98,14 +100,6 @@ class Scraper(ABC):
         except Exception as e:
             self.logging.error(f'error with opening file {path}\n{e}')
             return ""
-
-    def save_data_json(self, data: list, site="") -> None:
-        file = f'{SCRAPER_DIR}/data/{site}/{ProjectVariables.today_time}.json'
-        try:
-            with codecs.open(file, 'w', 'utf-8') as f:
-                json.dump(data, sort_keys=True, indent=4, separators=(',', ': '), fp=f, ensure_ascii=False)
-        except Exception as e:
-            self.logging.error(f'save_data_json could not save data to {file}\n{e}')
 
     def load_json(self, path: str) -> list:
         try:

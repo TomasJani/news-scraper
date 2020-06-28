@@ -1,7 +1,9 @@
+import codecs
+import json
 import time
 
 from random import randint
-from news_scraper import config, ProjectVariables
+from news_scraper import config, ProjectVariables, SCRAPER_DIR
 from news_scraper.atomic_dict import AtomicDict
 
 logging = ProjectVariables.root_logger
@@ -27,6 +29,15 @@ def validate_dict(fn):
             return None
 
     return wrapper
+
+
+def save_data_json(data: list) -> None:
+    file = f'{SCRAPER_DIR}/data/{ProjectVariables.today_time}.json'
+    try:
+        with codecs.open(file, 'a+', 'utf-8') as f:
+            json.dump(data, sort_keys=True, indent=4, separators=(',', ': '), fp=f, ensure_ascii=False)
+    except Exception as e:
+        logging.error(f'save_data_json could not save data to {file}\n{e}')
 
 
 def dict_to_list(data: AtomicDict) -> list:

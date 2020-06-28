@@ -3,7 +3,9 @@ from typing import Dict
 from bs4 import Tag
 
 from news_scraper import scraper_utils, SCRAPER_DIR, ProjectVariables
-from news_scraper.abstract_scraper import Scraper
+from news_scraper.enums.categories import Category
+from news_scraper.enums.site import Site
+from news_scraper.scrapers.abstract_scraper import Scraper
 from news_scraper.atomic_dict import AtomicDict
 from news_scraper.scraper_utils import list_to_dict, dict_to_list
 
@@ -12,30 +14,31 @@ class Plus7Dni(Scraper):
     def __init__(self):
         super().__init__()
         self.yesterdays_data: AtomicDict = list_to_dict(self.load_json(
-            f'{SCRAPER_DIR}/data/plus_7_dni/{self.yesterday_time}.json')) or AtomicDict()
-        self.url: str = self.config.get('URL', 'Plus7Dni')
+            f'{SCRAPER_DIR}/data/{self.yesterday_time}.json')) or AtomicDict()
+        self.site: Site = Site.Plus7Dni
+        self.url: str = self.config.get('URL', self.site.value)
 
     @staticmethod
-    def main() -> None:
+    def main() -> list:
         p7d = Plus7Dni()
         p7d.get_new_articles()
         print(len(p7d.data))
-        p7d.save_data_json(dict_to_list(p7d.data), site='plus_7_dni')
+        return dict_to_list(p7d.data)
 
     @scraper_utils.slow_down
     def get_new_articles_by_page(self, page: str) -> AtomicDict:
         new_data = AtomicDict()
-        current_content = self.get_content(self.url_of_page(self.url, page, 'Plus7Dni'))
+        current_content = self.get_content(self.url_of_page(self.url, page, self.site))
         if current_content is None:
             self.logging.error(
-                f"get_new_articles_by_page got None content with url {self.url_of_page(self.url, page, 'Plus7Dni')}")
+                f"get_new_articles_by_page got None content with url {self.url_of_page(self.url, page, self.site)}")
             return AtomicDict()
 
         current_content.find(class_='articles-quiz-popular').decompose()  # try/except
 
         for article in current_content.find_all(class_='article-tile'):
             scraped_article = self.scrape_article(article)
-            new_data.add(scraped_article)
+            new_data.add(scraped_article, self.site)
 
         return new_data
 
@@ -44,8 +47,8 @@ class Plus7Dni(Scraper):
         return {
             'title': article.find(class_='article-tile__text').find('h2').get_text(),
             'values': {
-                'site': 'plus_7_dni',
-                'category': 'domov',
+                'site': self.site.value,
+                'category': Category.HomeNews.value,
                 'url': article.find(class_='heading')['href'],
                 'time_published': self.parse_time(
                     article.find(class_='meta__item meta__item--datetime datetime-default')),
