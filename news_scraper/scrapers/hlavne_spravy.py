@@ -5,17 +5,17 @@ from typing import Dict
 from bs4 import Tag
 
 from news_scraper import scraper_utils, DATE_TIME_FORMAT, SCRAPER_DIR
+from news_scraper.atomic_dict import AtomicDict
 from news_scraper.enums.categories import Category
 from news_scraper.enums.site import Site
+from news_scraper.scraper_utils import dict_to_list, list_to_dict, load_json
 from news_scraper.scrapers.abstract_scraper import Scraper
-from news_scraper.atomic_dict import AtomicDict
-from news_scraper.scraper_utils import dict_to_list, list_to_dict
 
 
 class HlavneSpravy(Scraper):
     def __init__(self):
         super().__init__()
-        self.yesterdays_data: AtomicDict = list_to_dict(self.load_json(
+        self.yesterdays_data: AtomicDict = list_to_dict(load_json(
             f'{SCRAPER_DIR}/data/{self.yesterday_time}.json')) or AtomicDict()
         self.site: Site = Site.HlavneSpravy
         self.url: str = self.config.get('URL', self.site.value)

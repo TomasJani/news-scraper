@@ -1,6 +1,5 @@
 import abc
 import codecs
-import json
 from abc import ABC
 from typing import Optional, Dict
 
@@ -100,12 +99,3 @@ class Scraper(ABC):
         except Exception as e:
             self.logging.error(f'error with opening file {path}\n{e}')
             return ""
-
-    def load_json(self, path: str) -> list:
-        try:
-            with codecs.open(path, 'r', 'utf-8') as f:
-                read = f.read()
-                return json.loads(read)
-        except Exception as e:
-            self.logging.error(f'load_json cannot harvest data from date {path}\n{e}')
-            return []

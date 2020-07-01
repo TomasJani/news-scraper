@@ -18,10 +18,10 @@ def set_and_scrape() -> None:
     print(f'Started at: {ProjectVariables.today_time}')
 
     data = list()
-    # data.extend(DennikN.main())
+    data.extend(DennikN.main())
     data.extend(HlavneSpravy.main())
-    # data.extend(Plus7Dni.main())
-    # data.extend(SME.main())
+    data.extend(Plus7Dni.main())
+    data.extend(SME.main())
     data.extend(ZemAVek.main())
     save_data_json(data)
     send_logs()

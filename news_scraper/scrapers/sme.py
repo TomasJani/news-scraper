@@ -3,17 +3,17 @@ from typing import Dict
 from bs4 import Tag
 
 from news_scraper import scraper_utils, SCRAPER_DIR
+from news_scraper.atomic_dict import AtomicDict
 from news_scraper.enums.categories import Category
 from news_scraper.enums.site import Site
+from news_scraper.scraper_utils import list_to_dict, dict_to_list, load_json
 from news_scraper.scrapers.abstract_scraper import Scraper
-from news_scraper.atomic_dict import AtomicDict
-from news_scraper.scraper_utils import list_to_dict, dict_to_list
 
 
 class SME(Scraper):
     def __init__(self):
         super().__init__()
-        self.yesterdays_data: AtomicDict = list_to_dict(self.load_json(
+        self.yesterdays_data: AtomicDict = list_to_dict(load_json(
             f'{SCRAPER_DIR}/data/{self.yesterday_time}.json')) or AtomicDict()
         self.site: Site = Site.SME
         self.url: str = self.config.get('URL', self.site.value)
@@ -92,5 +92,6 @@ class SME(Scraper):
         months = ['', 'jan', 'feb', 'mar', 'apr', 'máj', 'jún', 'júl', 'aug', 'sep', 'okt', 'nov', 'dec']
         time_str = time_str.translate({ord(i): None for i in '.,'})
         day, month, year, _, time, _ = time_str.split(' ')
+        hours, minutes = time.split(':')
         month_str = '{:02d}'.format(months.index(month))
-        return f'{year}-{month_str}-{day} {time}'
+        return f'{year}-{month_str}-{day} {int(hours):02d}:{int(minutes):02d}'

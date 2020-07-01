@@ -3,17 +3,17 @@ from typing import Dict
 from bs4 import Tag
 
 from news_scraper import scraper_utils, SCRAPER_DIR, ProjectVariables
+from news_scraper.atomic_dict import AtomicDict
 from news_scraper.enums.categories import Category
 from news_scraper.enums.site import Site
+from news_scraper.scraper_utils import list_to_dict, dict_to_list, load_json
 from news_scraper.scrapers.abstract_scraper import Scraper
-from news_scraper.atomic_dict import AtomicDict
-from news_scraper.scraper_utils import list_to_dict, dict_to_list
 
 
 class Plus7Dni(Scraper):
     def __init__(self):
         super().__init__()
-        self.yesterdays_data: AtomicDict = list_to_dict(self.load_json(
+        self.yesterdays_data: AtomicDict = list_to_dict(load_json(
             f'{SCRAPER_DIR}/data/{self.yesterday_time}.json')) or AtomicDict()
         self.site: Site = Site.Plus7Dni
         self.url: str = self.config.get('URL', self.site.value)
